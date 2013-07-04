@@ -141,6 +141,37 @@ public class Boost implements ApplicationListener {
 		   circle.dispose(); 
 	   }
 	   
+	   private void explode(float blastPower, Vector2 center) {
+		   int numRays = 20;
+		   float DEGTORAD = (float)Math.PI/180;
+		   for (int i = 0; i < numRays; i++) {
+			      float angle = (i / (float)numRays) * 360 * DEGTORAD;
+			      Vector2 rayDir = new Vector2((float)Math.sin(angle),(float)Math.cos(angle));
+			  
+			      BodyDef bd = new BodyDef();
+			      bd.type = BodyType.DynamicBody;;
+			      bd.fixedRotation = true; // rotation not necessary
+			      bd.bullet = true; // prevent tunneling at high speed
+			      bd.linearDamping = 10; // drag due to moving through air
+			      bd.gravityScale = 0; // ignore gravity
+			      bd.position.set(center); // start at blast center
+			      bd.linearVelocity.set(new Vector2(blastPower * rayDir.x, blastPower * rayDir.y));
+			      Body body = world.createBody(bd);
+			  
+			      CircleShape circle = new CircleShape();
+			      circle.setRadius(0.05f); // very small
+			  
+			      FixtureDef fd = new FixtureDef();
+			      fd.shape = circle;
+			      fd.density = 60 / (float)numRays; // very high - shared across all particles
+			      fd.friction = 0; // friction not necessary
+			      fd.restitution = 0.99f; // high restitution to reflect off obstacles
+			      fd.filter.groupIndex = -1; // particles should not collide with each other
+			      Fixture fixture;
+			      fixture = body.createFixture(fd);
+			  }
+	   }
+	   
 	   @Override
 	   public void render() {
 	      Gdx.gl.glClearColor(0, 0, 0.2f, 1);
@@ -149,7 +180,7 @@ public class Boost implements ApplicationListener {
 	      // process user input
 	      if(Gdx.input.isTouched()) {
 	    	  
-	    	  
+	    	  explode(20, new Vector2(6, 5));
 	    	  ball.applyForceToCenter(new Vector2(1, 1));
 	      }
 	      
