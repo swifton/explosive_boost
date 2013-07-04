@@ -5,6 +5,7 @@ import java.util.Iterator;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL10;
@@ -33,7 +34,11 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 public class Boost implements ApplicationListener {
 	   OrthographicCamera camera;
+	   MyInputProcessor inputProcessor = new MyInputProcessor();
+
 	   boolean play = false;
+	   
+	   Vector2 ballInitialPosition = new Vector2(1, 2);
 	   
 	   World world = new World(new Vector2(0, -10), true); 
 	   static final float WORLD_TO_BOX = 0.02f;
@@ -41,62 +46,99 @@ public class Boost implements ApplicationListener {
 	   Box2DDebugRenderer debugRenderer;
 	   Matrix4 debugMatrix;
 	    
-	   BodyDef bodyDef;	   
-	   Body body;
+	   BodyDef ballDef;	   
+	   Body ball;
 	   FixtureDef fixtureDef;
 	   Fixture fixture; 
 
 	   Array<Body> walls;
+	   Body [] bombs;
+	   float [][] coordB = {{5, 5}, {7, 5}};
 	   
 	   @Override
 	   public void create() {
 		   camera = new OrthographicCamera();
 		   camera.setToOrtho(false, 800, 480);
+		   Gdx.input.setInputProcessor(inputProcessor);
 		   
 		   walls = new Array<Body>();
+		   bombs = new Body[coordB.length];
+		   
 		   float [][] coord = {{16, 7, 0.1f, 7}, {0.1f, 7, 0.1f, 7}, {0, 0.1f, camera.viewportWidth, 0.1f}};
 		  
 		   debugRenderer = new Box2DDebugRenderer();
-		   bodyDef = new BodyDef();
-      
+		   
+		   createBall();
+		   
+		   Body wallBody; 
+		   BodyDef wallBodyDef; 
+		 
+		   for (int i = 0; i < coord.length; i++) {
+			   wallBodyDef =new BodyDef();
+			   wallBodyDef.position.set(new Vector2(coord[i][0], coord[i][1]));
+			   PolygonShape wallBox;
+			   wallBox = new PolygonShape();
+			   wallBox.setAsBox(coord[i][2], coord[i][3]);
+			   wallBody = world.createBody(wallBodyDef);  
+			  
+			   wallBody.createFixture(wallBox, 0.0f); 
+			   wallBox.dispose();
+			  
+			   walls.add(wallBody);
+		   }
+		   
+		   BodyDef bombDef;	   
+		   Body bomb;
+		   FixtureDef bombFixtureDef;
+		   Fixture bombFixture;
+		   
+		   for (int i = 0; i < coordB.length; i++) {
+			   bombDef = new BodyDef();
+			   bombDef.type = BodyType.DynamicBody;
+			   bombDef.position.set(new Vector2(coordB[i][0], coordB[i][1]));
+			   
+			   PolygonShape bombBox;
+			   bombBox = new PolygonShape();
+			   bombBox.setAsBox(0.5f, 0.5f);
+			   
+			   bombFixtureDef = new FixtureDef();
+			   bombFixtureDef.shape = bombBox;
+			   bombFixtureDef.density = 0.5f; 
+			   bombFixtureDef.friction = 0.4f;
+			   bombFixtureDef.restitution = 0.3f;
+			   
+			   bomb = world.createBody(bombDef);
+			   bombFixture = bomb.createFixture(bombFixtureDef);
+			   bombBox.dispose(); 
+			   
+			   bombs[i] = bomb;
+		   }
+		   
+		
+		   debugMatrix=new Matrix4(camera.combined);
+		   debugMatrix.scale(BOX_TO_WORLD, BOX_TO_WORLD, 1f);
+	   }
+	   
+	   private void createBall() {
+		   ballDef = new BodyDef();
+		   ballDef.type = BodyType.DynamicBody;
+		   ballDef.position.set(1, 2);
+		      
 		   CircleShape circle;
 		   circle = new CircleShape();
 		   circle.setRadius(0.2f);
 		  
 		   fixtureDef = new FixtureDef();
-		   bodyDef.type = BodyType.DynamicBody;
-		   bodyDef.position.set(1, 2);
 		
-		   body = world.createBody(bodyDef);
+		   ball = world.createBody(ballDef);
 		
 		   fixtureDef.shape = circle;
 		   fixtureDef.density = 0.5f; 
 		   fixtureDef.friction = 0.4f;
 		   fixtureDef.restitution = 0.8f;
 		
-		   fixture = body.createFixture(fixtureDef);
-		   
+		   fixture = ball.createFixture(fixtureDef);
 		   circle.dispose(); 
-		   
-		   Body wallBody; 
-		   BodyDef wallBodyDef; 
-		 
-		   for (int i = 0; i < coord.length; i++){
-			   wallBodyDef =new BodyDef();
-			   wallBodyDef.position.set(new Vector2(coord[i][0], coord[i][1]));
-			   PolygonShape wallBox;
-			   wallBox = new PolygonShape();  
-			   wallBody = world.createBody(wallBodyDef);  
-			  
-			   wallBox.setAsBox(coord[i][2], coord[i][3]);
-			   wallBody.createFixture(wallBox, 0.0f); 
-			   wallBox.dispose();
-			  
-			   walls.add(wallBody);
-		   }
-		
-		   debugMatrix=new Matrix4(camera.combined);
-		   debugMatrix.scale(BOX_TO_WORLD, BOX_TO_WORLD, 1f);
 	   }
 	   
 	   @Override
@@ -106,12 +148,9 @@ public class Boost implements ApplicationListener {
 	      
 	      // process user input
 	      if(Gdx.input.isTouched()) {
-	    	  if(play) {
-	    		  resetLevel();
-	    	  }
-	    	  play = !play;
 	    	  
-	    	  body.applyForceToCenter(new Vector2(1, 1));
+	    	  
+	    	  ball.applyForceToCenter(new Vector2(1, 1));
 	      }
 	      
 	      debugRenderer.render(world, debugMatrix);
@@ -120,9 +159,66 @@ public class Boost implements ApplicationListener {
 	      }
 	   }
 	   
+	   
+	   public class MyInputProcessor implements InputProcessor {
+		   @Override
+		   public boolean keyDown (int keycode) {
+		      return false;
+		   }
+
+		   @Override
+		   public boolean keyUp (int keycode) {
+		      return false;
+		   }
+
+		   @Override
+		   public boolean keyTyped (char character) {
+		      return false;
+		   }
+
+		   @Override
+		   public boolean touchDown (int x, int y, int pointer, int button) {
+		      return false;
+		   }
+
+		   @Override
+		   public boolean touchUp (int x, int y, int pointer, int button) {
+			   if(play) {
+		    		  resetLevel();
+		    	  }
+		    	  play = !play;
+		      return false;
+		   }
+
+		   @Override
+		   public boolean touchDragged (int x, int y, int pointer) {
+		      return false;
+		   }
+
+		   @Override
+		   public boolean mouseMoved (int x, int y) {
+		      return false;
+		   }
+
+		   @Override
+		   public boolean scrolled (int amount) {
+		      return false;
+		   }
+		}
+	   
 	   private void resetLevel() {
-		   body = world.createBody(bodyDef);
-		   fixture = body.createFixture(fixtureDef);
+		   ball.setTransform(ballInitialPosition, 0);
+		   ball.setLinearVelocity(new Vector2(0,0));
+		   ball.setAngularVelocity(0);
+		   ball.setAwake(true);
+		   Body bomb;
+		   for (int i = 0; i < coordB.length; i++) {
+			   bomb = bombs[i];
+			   bomb.setTransform(coordB[i][0], coordB[i][1], 0);
+			   bomb.setLinearVelocity(new Vector2(0,0));
+			   bomb.setAngularVelocity(0);
+			   bomb.setAwake(true);
+		   }
 	   }
 	   
 	   @Override
