@@ -1,44 +1,36 @@
 package org.pentode.boost;
 
-import java.util.Iterator;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
+import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Payload;
+import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Source;
+import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Target;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 
 public class Boost implements ApplicationListener {
 	   OrthographicCamera camera;
+	   public Stage stage;
 	   MyInputProcessor inputProcessor = new MyInputProcessor();
 
 	   boolean play = false;
@@ -46,166 +38,150 @@ public class Boost implements ApplicationListener {
 	   Vector2 ballInitialPosition = new Vector2(1, 2);
 	   
 	   World world = new World(new Vector2(0, -10), true); 
-	   static final float WORLD_TO_BOX = 0.02f;
 	   static final float BOX_TO_WORLD = 50f;
 	   Box2DDebugRenderer debugRenderer;
 	   Matrix4 debugMatrix;
 	    
-	   BodyDef ballDef;	   
-	   Body ball;
-	   FixtureDef fixtureDef;
-	   Fixture fixture; 
+	   Ball ball;
 
-	   Array<Body> walls;
-	   Body [] bombs;
-	   int [] givenCountdownTime;
-	   int [] countdownTime;
-	   float [][] coordB = {{5, 5}, {7, 5}};
+	   Bomb [] bombs;
+	   float [][] coordB = {{5, 5, 100}, {7, 5, 300}};
 	   
-	   Array<Body []> explosions = new Array<Body []>();
-	   List<Integer> cleanupDelay = new ArrayList<Integer>();
+	   Array<Explosion> explosions = new Array<Explosion>();
 	   
 	   @Override
 	   public void create() {
+		   
+		   // gdx stuff
 		   Gdx.app.log("MyTag", "my informative message");
-
+		   stage = new Stage();
 		   camera = new OrthographicCamera();
 		   camera.setToOrtho(false, 800, 480);
-		   Gdx.input.setInputProcessor(inputProcessor);
+		   Gdx.input.setInputProcessor(stage);
 		   
-		   walls = new Array<Body>();
-		   bombs = new Body[coordB.length];
-		   countdownTime = new int[coordB.length];
-		   givenCountdownTime = new int[coordB.length];
-		   
-		   givenCountdownTime[0] = 100;
-		   givenCountdownTime[1] = 300;
-		   
+		   //box2d stuff
 
-		   for (int j = 0; j < coordB.length; j++) {
-			   countdownTime[j] = givenCountdownTime[j];
-		   }
-		   
-		   float [][] coord = {{16, 7, 0.1f, 7}, {0.1f, 7, 0.1f, 7}, {0, 0.1f, camera.viewportWidth, 0.1f}};
-		  
 		   debugRenderer = new Box2DDebugRenderer();
 		   
-		   createBall();
+		   // Ball. What's difficult?
+		   ball = new Ball(world);
 		   
-		   Body wallBody; 
-		   BodyDef wallBodyDef; 
-		 
+		   // Walls
+		   float [][] coord = {{16, 7, 0.1f, 7}, {0.1f, 7, 0.1f, 7}, {0, 0.1f, camera.viewportWidth, 0.1f}};
+		   		 
 		   for (int i = 0; i < coord.length; i++) {
-			   wallBodyDef =new BodyDef();
-			   wallBodyDef.position.set(new Vector2(coord[i][0], coord[i][1]));
-			   PolygonShape wallBox;
-			   wallBox = new PolygonShape();
-			   wallBox.setAsBox(coord[i][2], coord[i][3]);
-			   wallBody = world.createBody(wallBodyDef);  
-			  
-			   wallBody.createFixture(wallBox, 0.0f); 
-			   wallBox.dispose();
-			  
-			   walls.add(wallBody);
+			   new Wall(coord[i][0], coord[i][1], coord[i][2], coord[i][3], world);
 		   }
 		   
-		   Body bomb;
+		   // Bombs
+		   bombs = new Bomb[coordB.length];
+		   Bomb bomb;
 		   
 		   for (int i = 0; i < coordB.length; i++) {
-			   bomb = createBomb(coordB[i][0], coordB[i][1]);
-			   
+			   bomb = new Bomb(coordB[i][0], coordB[i][1], world);
+			   bomb.givenCountdownTime = (int) coordB[i][2];
+			   bomb.countdownTime = bomb.givenCountdownTime;
 			   bombs[i] = bomb;
+			   
 		   }
 		   
+		   // Play Button
+		   
+		   Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+		   final TextButton button = new TextButton("Play", skin);
+	        button.setX(1700f);
+	        button.setY(1000f);
+	        button.setWidth(140f);
+	        button.setHeight(140f);
+	        stage.addActor(button);
+	        
+	        button.addListener(new ChangeListener() {
+	        	@Override
+				public void changed (ChangeEvent event, Actor actor) {
+				//	System.out.println("Clicked! Is checked: " + button.isChecked());
+	        		button.setText("Stop");
+	        		 if(play) {
+	   		    	  resetLevel();
+	   		    	  button.setText("Play");
+	   			   }			   
+	   		    	  play = !play;
+				}
+			});
+	        
+	        // Trying to drag the button
+	        
+	        DragAndDrop dragAndDrop = new DragAndDrop();
+	        
+	        final Skin skinn = new Skin();
+			skinn.add("default", new LabelStyle(new BitmapFont(), Color.WHITE));
+			skinn.add("badlogic", new Texture("droplet.png"));
+
+			Image sourceImage = new Image(skinn, "badlogic");
+			sourceImage.setBounds(50, 125, 100, 100);
+			stage.addActor(sourceImage);
+			
+			Image validTargetImage = new Image(skinn, "badlogic");
+			validTargetImage.setBounds(200, 50, 100, 100);
+			stage.addActor(validTargetImage);
+
+			Image invalidTargetImage = new Image(skinn, "badlogic");
+			invalidTargetImage.setBounds(200, 200, 100, 100);
+			stage.addActor(invalidTargetImage);
+	        
+			dragAndDrop.addSource(new Source(sourceImage) {
+				public Payload dragStart (InputEvent event, float x, float y, int pointer) {
+					Payload payload = new Payload();
+					payload.setObject("Some payload!");
+
+					payload.setDragActor(new Label("Some payload!", skinn));
+
+					Label validLabel = new Label("Some payload!", skinn);
+					validLabel.setColor(0, 1, 0, 1);
+					payload.setValidDragActor(validLabel);
+
+					Label invalidLabel = new Label("Some payload!", skinn);
+					invalidLabel.setColor(1, 0, 0, 1);
+					payload.setInvalidDragActor(invalidLabel);
+
+					return payload;
+				}
+			});
+			
+			dragAndDrop.addTarget(new Target(validTargetImage) {
+				public boolean drag (Source source, Payload payload, float x, float y, int pointer) {
+					getActor().setColor(Color.GREEN);
+					return true;
+				}
+
+				public void reset (Source source, Payload payload) {
+					getActor().setColor(Color.WHITE);
+				}
+
+				public void drop (Source source, Payload payload, float x, float y, int pointer) {
+					System.out.println("Accepted: " + payload.getObject() + " " + x + ", " + y);
+				}
+			});
+			dragAndDrop.addTarget(new Target(invalidTargetImage) {
+				public boolean drag (Source source, Payload payload, float x, float y, int pointer) {
+					getActor().setColor(Color.RED);
+					return false;
+				}
+
+				public void reset (Source source, Payload payload) {
+					getActor().setColor(Color.WHITE);
+				}
+
+				public void drop (Source source, Payload payload, float x, float y, int pointer) {
+				}
+			});
+	        
+	        // stuff
 		
 		   debugMatrix=new Matrix4(camera.combined);
 		   debugMatrix.scale(BOX_TO_WORLD, BOX_TO_WORLD, 1f);
 	   }
 	   
-	   private Body createBomb(float x, float y) {
-		   BodyDef bombDef;	   
-		   Body bomb;
-		   FixtureDef bombFixtureDef;
-		   Fixture bombFixture;
-		   
-		   bombDef = new BodyDef();
-		   bombDef.type = BodyType.DynamicBody;
-		   bombDef.position.set(new Vector2(x, y));
-		   
-		   PolygonShape bombBox;
-		   bombBox = new PolygonShape();
-		   bombBox.setAsBox(0.5f, 0.5f);
-		   
-		   bombFixtureDef = new FixtureDef();
-		   bombFixtureDef.shape = bombBox;
-		   bombFixtureDef.density = 0.5f; 
-		   bombFixtureDef.friction = 0.4f;
-		   bombFixtureDef.restitution = 0.3f;
-		   
-		   bomb = world.createBody(bombDef);
-		   bombFixture = bomb.createFixture(bombFixtureDef);
-		   bombBox.dispose(); 
-		   
-		   return bomb;
-	   }
 	   
-	   private void createBall() {
-		   ballDef = new BodyDef();
-		   ballDef.type = BodyType.DynamicBody;
-		   ballDef.position.set(1, 2);
-		      
-		   CircleShape circle;
-		   circle = new CircleShape();
-		   circle.setRadius(0.2f);
-		  
-		   fixtureDef = new FixtureDef();
-		
-		   ball = world.createBody(ballDef);
-		
-		   fixtureDef.shape = circle;
-		   fixtureDef.density = 0.5f; 
-		   fixtureDef.friction = 0.4f;
-		   fixtureDef.restitution = 0.8f;
-		
-		   fixture = ball.createFixture(fixtureDef);
-		   circle.dispose(); 
-	   }
-	   
-	   private void explode(float blastPower, Vector2 center) {
-		   int numRays = 20;
-		   float DEGTORAD = (float)Math.PI/180;
-		   Body [] bullets = new Body[numRays];
-		   for (int i = 0; i < numRays; i++) {
-			      float angle = (i / (float)numRays) * 360 * DEGTORAD;
-			      Vector2 rayDir = new Vector2((float)Math.sin(angle),(float)Math.cos(angle));
-			  
-			      BodyDef bd = new BodyDef();
-			      bd.type = BodyType.DynamicBody;;
-			      bd.fixedRotation = true; // rotation not necessary
-			      bd.bullet = true; // prevent tunneling at high speed
-			      bd.linearDamping = 10; // drag due to moving through air
-			      bd.gravityScale = 0; // ignore gravity
-			      bd.position.set(center); // start at blast center
-			      bd.linearVelocity.set(new Vector2(blastPower * rayDir.x, blastPower * rayDir.y));
-			      Body body = world.createBody(bd);
-			  
-			      CircleShape circle = new CircleShape();
-			      circle.setRadius(0.05f); // very small
-			  
-			      FixtureDef fd = new FixtureDef();
-			      fd.shape = circle;
-			      fd.density = 60 / (float)numRays; // very high - shared across all particles
-			      fd.friction = 0; // friction not necessary
-			      fd.restitution = 0.99f; // high restitution to reflect off obstacles
-			      fd.filter.groupIndex = -1; // particles should not collide with each other
-			      Fixture fixture = body.createFixture(fd);
-			      
-			      bullets[i] = body;
-			  }
-		   
-		   explosions.add(bullets);
-		   cleanupDelay.add(25);
-	   }
 	   
 	   @Override
 	   public void render() {
@@ -214,47 +190,47 @@ public class Boost implements ApplicationListener {
 	      
 	      // process user input
 	      if(Gdx.input.isTouched()) {
-	    	  
-	    	  ball.applyForceToCenter(new Vector2(1, 1));
+	    	  ball.body.applyForceToCenter(new Vector2(1, 1));
 	      }
 	      
-	      // cleaning up explosions
-	      
-	      int j;
-	      
-	      for (int i = 0; i < cleanupDelay.size(); i++) {
-	    	  j = cleanupDelay.get(i);
-	    	  cleanupDelay.set(i, j - 1);
-	    	  if (j - 1 == 0) {
-	    		  cleanupDelay.remove(i);
-	    		  cleanup(explosions.get(i));
-	    		  explosions.removeIndex(i);
-	    		  i -= 1;
+	      // cleaning up explosions	     
+	      for (Explosion e:explosions) {
+	    	  e.cleanupDelay -= 1;
+	    	  if (e.cleanupDelay == 0) {
+	    		  e.dispose(world);
+	    		  explosions.removeValue(e, true);
 	    	  }
 	      }
 	      
-	      
-	      
 	      debugRenderer.render(world, debugMatrix);
+	      stage.draw();
+	      
 	      if (play) {
 	    	// Bomb timers count down
 		      
 		      for (int i = 0; i < coordB.length; i++) {
-		    	  countdownTime[i] -= 1;
-		    	  if (countdownTime[i] < 0) countdownTime[i] = -1;
-		    	  if (countdownTime[i] == 0) {
-		    		  explode(20, bombs[i].getPosition());
-		    		  world.destroyBody(bombs[i]);
+		    	  bombs[i].countdownTime -= 1;
+		    	  if (bombs[i].countdownTime < -1000) bombs[i].countdownTime = -1;
+		    	  if (bombs[i].countdownTime == 0) {
+		    		  Explosion explosion = new Explosion(20, bombs[i].body.getPosition(), world);
+		    		  explosions.add(explosion);
+		    		  world.destroyBody(bombs[i].body);
 		    	  }
 		      }
-	    	  
 	    	  world.step(1/60f, 6, 2);
 	      }
 	   }
 	   
-	   private void cleanup(Body [] bull) {
-		   for (int k = 0; k < bull.length; k++) {
-			   world.destroyBody(bull[k]);
+	   private void resetLevel() {
+		   ball.reset(ballInitialPosition.x, ballInitialPosition.y);
+		   
+		   for (int k = 0; k < coordB.length; k++) {
+			   if (bombs[k].countdownTime <= 0) {
+				   bombs[k].createBody(coordB[k][0], coordB[k][1], world);		   
+			   }
+			   
+			   bombs[k].reset(coordB[k][0], coordB[k][1]);
+			   bombs[k].countdownTime = bombs[k].givenCountdownTime;
 		   }
 	   }
 	   
@@ -283,14 +259,14 @@ public class Boost implements ApplicationListener {
 		   public boolean touchUp (int x, int y, int pointer, int button) {
 			   if(play) {
 		    	  resetLevel();
-		      }
-			   
+			   }			   
 		    	  play = !play;
 		      return false;
 		   }
 
 		   @Override
-		   public boolean touchDragged (int x, int y, int pointer) {			  
+		   public boolean touchDragged (int x, int y, int pointer) {
+			//   bombs[0].reset(x/(2*BOX_TO_WORLD), (960 - y)/(2*BOX_TO_WORLD));
 		      return false;
 		   }
 
@@ -304,35 +280,6 @@ public class Boost implements ApplicationListener {
 		      return false;
 		   }
 		}
-	   
-	   private void resetLevel() {
-		   ball.setTransform(ballInitialPosition, 0);
-		   ball.setLinearVelocity(new Vector2(0,0));
-		   ball.setAngularVelocity(0);
-		   ball.setAwake(true);
-		   
-		   Body bomb;
-		   
-		   for (int k = 0; k < coordB.length; k++) {
-			   if (countdownTime[k] <= 0) {
-				   bomb = createBomb(coordB[k][0], coordB[k][1]);
-				   bombs[k] = bomb;
-				   
-			   }
-		   }
-		   
-		   for (int i = 0; i < coordB.length; i++) {
-			   bomb = bombs[i];
-			   bomb.setTransform(coordB[i][0], coordB[i][1], 0);
-			   bomb.setLinearVelocity(new Vector2(0,0));
-			   bomb.setAngularVelocity(0);
-			   bomb.setAwake(true);
-		   }
-		   
-		   for (int j = 0; j < coordB.length; j++) {
-			   countdownTime[j] = givenCountdownTime[j];
-		   }
-	   }
 	   
 	   @Override
 	   public void dispose() {
