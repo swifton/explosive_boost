@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.World;
@@ -13,14 +12,13 @@ public class Ball {
 
 	Body body;
 	
-	 public Ball(World world) {
+	 public Ball(World world, Vector2 ballInitialPosition) {
 		   BodyDef ballDef;	   
 		   FixtureDef fixtureDef;
-		   Fixture fixture; 
 		   
 		   ballDef = new BodyDef();
 		   ballDef.type = BodyType.DynamicBody;
-		   ballDef.position.set(1, 2);
+		   ballDef.position.set(ballInitialPosition.x, ballInitialPosition.y);
 		      
 		   CircleShape circle;
 		   circle = new CircleShape();
@@ -35,7 +33,7 @@ public class Ball {
 		   fixtureDef.friction = 0.4f;
 		   fixtureDef.restitution = 0.8f;
 		
-		   fixture = body.createFixture(fixtureDef);
+		   body.createFixture(fixtureDef);
 		   circle.dispose(); 
 	   }
 	 

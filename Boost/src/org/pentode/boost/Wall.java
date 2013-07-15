@@ -13,10 +13,10 @@ public class Wall {
 		BodyDef wallBodyDef; 
 		   
 		wallBodyDef =new BodyDef();
-		wallBodyDef.position.set(new Vector2(x, y));
+		wallBodyDef.position.set(new Vector2((x + w - 1f)*0.1f, (y + h - 1f)*0.1f));
 		PolygonShape wallBox;
 		wallBox = new PolygonShape();
-		wallBox.setAsBox(w, h);
+		wallBox.setAsBox((w - x + 1) * 0.1f, (h - y + 1) * 0.1f);
 		body = world.createBody(wallBodyDef);  
 		
 		body.createFixture(wallBox, 0.0f); 

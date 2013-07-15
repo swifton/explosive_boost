@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.World;
@@ -41,7 +40,7 @@ public class Explosion {
 			      fd.friction = 0; // friction not necessary
 			      fd.restitution = 0.99f; // high restitution to reflect off obstacles
 			      fd.filter.groupIndex = -1; // particles should not collide with each other
-			      Fixture fixture = body.createFixture(fd);
+			      body.createFixture(fd);
 			      
 			      bullets[i] = body;
 			  }
