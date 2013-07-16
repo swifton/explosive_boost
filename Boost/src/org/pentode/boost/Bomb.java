@@ -24,6 +24,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Source;
 public class Bomb {
 	Body body;
 	int givenCountdownTime;
+	int seconds;
+	int centiSeconds;
 	int countdownTime;
 	float startX, startY;
 	Stage stagee;
@@ -86,7 +88,8 @@ public class Bomb {
 			    public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 			    	if (play) return;
 			    	if (touched) {
-			    		timeWindow.label.setText((CharSequence) Integer.toString(givenCountdownTime));
+			    		timeWindow.labelSec.setText((CharSequence) Integer.toString(seconds));
+			    		timeWindow.labelCen.setText((CharSequence) Integer.toString(centiSeconds));
 			    		timeWindow.window.setVisible(true);
 			    		passBomb();
 			    		}

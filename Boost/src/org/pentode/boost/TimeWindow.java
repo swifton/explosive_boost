@@ -15,7 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 public class TimeWindow {
 	Stage stagee;
 	Window window;
-	Label label;
+	Label labelSec;
+	Label labelCen;
 	Bomb bomb;
 	
 	public TimeWindow(Stage stage) {
@@ -24,17 +25,23 @@ public class TimeWindow {
 		Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 		Gdx.input.setInputProcessor(stage);
 		Button close = new TextButton("OK", skin);
-		Button plus = new TextButton("+", skin);
-		Button minus = new TextButton("-", skin);
-		label = new Label("", skin);
+		Button plusSec = new TextButton("+", skin);
+		Button minusSec = new TextButton("-", skin);
+		Button plusCen = new TextButton("+", skin);
+		Button minusCen = new TextButton("-", skin);
+		labelSec = new Label("", skin);
+		labelCen = new Label("", skin);
 		
 		Table t = new Table();
 		t.row();
-		t.add(plus).minWidth(200).minHeight(100);
+		t.add(plusSec).minWidth(100).minHeight(100);
+		t.add(plusCen).minWidth(100).minHeight(100);
 		t.row();
-		t.add(label).minHeight(50);
+		t.add(labelSec).minHeight(50);
+		t.add(labelCen).minHeight(50);
 		t.row();
-		t.add(minus).minWidth(200).minHeight(100);
+		t.add(minusSec).minWidth(100).minHeight(100);
+		t.add(minusCen).minWidth(100).minHeight(100);
 		
 		SplitPane splitPane = new SplitPane(t, close, false, skin, "default-horizontal");
 
@@ -55,20 +62,34 @@ public class TimeWindow {
 		    }
 		});
 		
-		plus.addListener(new ClickListener() {
+		plusSec.addListener(new ClickListener() {
 		    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-		    	bomb.givenCountdownTime += 10;
-	    		label.setText((CharSequence) Integer.toString(bomb.givenCountdownTime));
+		    	if (bomb.seconds < 99) bomb.seconds += 1;
+	    		labelSec.setText((CharSequence) Integer.toString(bomb.seconds));
 		    	return true;
 		    }
 		});
 		
-		minus.addListener(new ClickListener() {
+		minusSec.addListener(new ClickListener() {
 		    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-		    	if (bomb.givenCountdownTime > 0) {
-		    		bomb.givenCountdownTime -= 10;
-		    	}
-	    		label.setText((CharSequence) Integer.toString(bomb.givenCountdownTime));
+		    	if (bomb.seconds > 0) bomb.seconds -= 1;
+	    		labelSec.setText((CharSequence) Integer.toString(bomb.seconds));
+		    	return true;
+		    }
+		});
+		
+		plusCen.addListener(new ClickListener() {
+		    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+		    	if (bomb.centiSeconds < 99) bomb.centiSeconds += 10;
+	    		labelCen.setText((CharSequence) Integer.toString(bomb.centiSeconds));
+		    	return true;
+		    }
+		});
+		
+		minusCen.addListener(new ClickListener() {
+		    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+		    	if (bomb.centiSeconds > 0) bomb.centiSeconds -= 10;
+	    		labelCen.setText((CharSequence) Integer.toString(bomb.centiSeconds));
 		    	return true;
 		    }
 		});
