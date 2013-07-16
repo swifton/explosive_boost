@@ -28,17 +28,18 @@ public class Bomb {
 	float startX, startY;
 	Stage stagee;
 	boolean touched;
+	boolean play = false;
 	TimeWindow timeWindow;
 	static final float BTWORLD = 200f;
 
 	
-	  public Bomb(float x, float y, World world, Stage stage, TimeWindow w) {
+	  public Bomb(int x, int y, World world, Stage stage, TimeWindow w) {
 		  timeWindow = w;
 		  stagee = stage;
-		  startX = x;
-		  startY = y;
+		  startX = x * 0.2f - 0.1f;
+		  startY = y * 0.2f - 0.1f;
 		  createBody(x, y, world);
-		  createDragDrop(x, y, stage);
+		  createDragDrop(startX, startY, stage);
 	   }
 	  
 	  public void createBody(float x, float y, World world) {
@@ -48,7 +49,7 @@ public class Bomb {
 		   
 		   bombDef = new BodyDef();
 		   bombDef.type = BodyType.DynamicBody;
-		   bombDef.position.set(new Vector2(x, y));
+		   bombDef.position.set(new Vector2(x * 0.2f - 0.1f, y * 0.2f - 0.1f));
 		   
 		   PolygonShape bombBox;
 		   bombBox = new PolygonShape();
@@ -78,10 +79,12 @@ public class Bomb {
 			
 			sourceImage.addListener(new ClickListener() {
 			    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+			    	if (play) return true;
 			    	touched = true;
 			        return true;
 			    }
 			    public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+			    	if (play) return;
 			    	if (touched) {
 			    		timeWindow.label.setText((CharSequence) Integer.toString(givenCountdownTime));
 			    		timeWindow.window.setVisible(true);
@@ -93,6 +96,7 @@ public class Bomb {
 	        
 			dragAndDrop.addSource(new Source(sourceImage) {
 				public Payload dragStart (InputEvent event, float x, float y, int pointer) {
+					if (play) return null;
 					touched = false;
 					Payload payload = new Payload();
 					payload.setObject("crap");
@@ -114,6 +118,7 @@ public class Bomb {
 			            float y,
 			            int pointer,
 			            DragAndDrop.Target target) {
+					if (play) return;
 					float myx = x + sourceImage.getX();
 					float myy = y + sourceImage.getY();
 					startX = ((float)Math.round((myx * 5)/BTWORLD))/5 - 0.1f;
