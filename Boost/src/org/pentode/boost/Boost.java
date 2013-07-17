@@ -1,6 +1,7 @@
 package org.pentode.boost;
 
 import com.badlogic.gdx.ApplicationListener;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
@@ -11,7 +12,12 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Manifold;
+import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -47,6 +53,9 @@ public class Boost implements ApplicationListener {
 	   Vector2 p3;
 	   Body lastBody;	   
 	   RayCastCallback callBack;
+	   
+	   ContactListener contactListener;
+	   QueryCallback AABBCallback;
 
 	   @Override
 	   public void create() {
@@ -58,7 +67,7 @@ public class Boost implements ApplicationListener {
 			   }
 		   };
 		     
-		   loadLevel(levels.level1);
+		   loadLevel(levels.level4);
 		   
 		   // gdx stuff
 		   Gdx.app.log("MyTag", "my informative message");
@@ -118,6 +127,35 @@ public class Boost implements ApplicationListener {
 			});
 	        
 		   ball = new Ball(world, ballInitialPosition);
+		   
+		   contactListener = new ContactListener() {
+			   public void beginContact(Contact contact) {
+				   if (!play) {
+					   
+				   }
+			   }
+			   
+			   public void endContact(Contact contact) {
+				   
+			   }
+			   
+			   public void postSolve(Contact contact, ContactImpulse impulse) {
+				   
+			   }
+			   
+			   public void preSolve(Contact contact, Manifold oldManifold) {
+				   
+			   }
+		   };
+		   
+		   AABBCallback = new QueryCallback() {
+			   public boolean reportFixture(Fixture fixture) {
+				   
+				   return true;
+			   }
+		   };
+		   
+		   world.setContactListener(contactListener);
 		   
 		   debugMatrix=new Matrix4(camera.combined);
 		   debugMatrix.scale(BOX_TO_WORLD, BOX_TO_WORLD, 1f);
@@ -179,6 +217,10 @@ public class Boost implements ApplicationListener {
 	      
 	      debugRenderer.render(world, debugMatrix);
 	      stage.draw();
+	      
+	      if (!play) {
+	    	  world.QueryAABB(AABBCallback, 0f, 0f, 8.6f, 6f);
+	      }
 	      
 	      if (play) {
 	    	// Bomb timers count down

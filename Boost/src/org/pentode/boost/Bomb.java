@@ -47,25 +47,25 @@ public class Bomb {
 	  public void createBody(float x, float y, World world) {
 		  BodyDef bombDef;	   
 		   
-		   FixtureDef bombFixtureDef;
+		  FixtureDef bombFixtureDef;
 		   
-		   bombDef = new BodyDef();
-		   bombDef.type = BodyType.DynamicBody;
-		   bombDef.position.set(new Vector2(x * 0.2f - 0.1f, y * 0.2f - 0.1f));
+		  bombDef = new BodyDef();
+		  bombDef.type = BodyType.DynamicBody;
+		  bombDef.position.set(new Vector2(x * 0.2f - 0.1f, y * 0.2f - 0.1f));
 		   
-		   PolygonShape bombBox;
-		   bombBox = new PolygonShape();
-		   bombBox.setAsBox(0.3f, 0.3f);
+		  PolygonShape bombBox;
+		  bombBox = new PolygonShape();
+		  bombBox.setAsBox(0.3f, 0.3f);
 		   
-		   bombFixtureDef = new FixtureDef();
-		   bombFixtureDef.shape = bombBox;
-		   bombFixtureDef.density = 0.5f; 
-		   bombFixtureDef.friction = 0.4f;
-		   bombFixtureDef.restitution = 0.3f;
+		  bombFixtureDef = new FixtureDef();
+		  bombFixtureDef.shape = bombBox;
+		  bombFixtureDef.density = 0.5f; 
+		  bombFixtureDef.friction = 0.4f;
+		  bombFixtureDef.restitution = 0.3f;
 		   
-		   body = world.createBody(bombDef);
-		   body.createFixture(bombFixtureDef);
-		   bombBox.dispose(); 
+		  body = world.createBody(bombDef);
+		  body.createFixture(bombFixtureDef);
+		  bombBox.dispose(); 
 	  }
 	  
 	  private void createDragDrop(float x, float y, Stage stage) {	 
