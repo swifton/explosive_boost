@@ -57,6 +57,8 @@ public class TimeWindow {
 		close.addListener(new ClickListener() {
 		    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				window.setVisible(false);
+				bomb.resetCurrentTime();
+				bomb.updateLabel();
 				bomb = null;
 		    	return true;
 		    }

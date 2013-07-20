@@ -1,13 +1,16 @@
 package org.pentode.boost;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -23,9 +26,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Source;
 
 public class Bomb {
 	Body body;
-	int givenCountdownTime;
+	//int givenCountdownTime;
 	int seconds;
 	int centiSeconds;
+	int currentSeconds;
+	int currentCentiSeconds;
 	int countdownTime;
 	float startX, startY;
 	Stage stagee;
@@ -33,15 +38,22 @@ public class Bomb {
 	boolean play = false;
 	TimeWindow timeWindow;
 	static final float BTWORLD = 200f;
-
+	boolean droppable = true;
+	QueryCallback AABBCallback;
+	World world;
+	Label label;
 	
-	  public Bomb(int x, int y, World world, Stage stage, TimeWindow w) {
+	  public Bomb(int x, int y, World wrld, Stage stage, TimeWindow w) {
+		  world = wrld;
 		  timeWindow = w;
 		  stagee = stage;
 		  startX = x * 0.2f - 0.1f;
 		  startY = y * 0.2f - 0.1f;
 		  createBody(x, y, world);
 		  createDragDrop(startX, startY, stage);
+		  Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+		  label = new Label("", skin);
+		  stage.addActor(label);
 	   }
 	  
 	  public void createBody(float x, float y, World world) {
@@ -55,7 +67,7 @@ public class Bomb {
 		   
 		  PolygonShape bombBox;
 		  bombBox = new PolygonShape();
-		  bombBox.setAsBox(0.3f, 0.3f);
+		  bombBox.setAsBox(0.29f, 0.29f);
 		   
 		  bombFixtureDef = new FixtureDef();
 		  bombFixtureDef.shape = bombBox;
@@ -66,6 +78,16 @@ public class Bomb {
 		  body = world.createBody(bombDef);
 		  body.createFixture(bombFixtureDef);
 		  bombBox.dispose(); 
+		  
+		  AABBCallback = new QueryCallback() {
+			   public boolean reportFixture(Fixture fixture) {
+				   if (fixture.getBody() != body) {
+					   droppable = false;
+					   return false;
+				   }
+				   return true;
+			   }
+		   };
 	  }
 	  
 	  private void createDragDrop(float x, float y, Stage stage) {	 
@@ -116,20 +138,23 @@ public class Bomb {
 			
 					return payload;
 				}
-				public void dragStop(InputEvent event,
-			            float x,
-			            float y,
-			            int pointer,
-			            DragAndDrop.Target target) {
+				public void dragStop(InputEvent event, float x, float y, int pointer, DragAndDrop.Target target) {
 					if (play) return;
+					droppable = true;
+
 					float myx = x + sourceImage.getX();
 					float myy = y + sourceImage.getY();
 					startX = ((float)Math.round((myx * 5)/BTWORLD))/5 - 0.1f;
 					startY = ((float)Math.round((myy * 5)/BTWORLD))/5 - 0.1f;
 					myx = startX * BTWORLD;
 					myy = startY * BTWORLD;
+					
+			    	world.QueryAABB(AABBCallback, startX - 0.1f, startY - 0.1f, startX + 0.1f, startY + 0.1f);
+			    	if (!droppable) return;
+			    	
 					body.setTransform(new Vector2(startX, startY), 0);
 					sourceImage.setBounds(myx - 50, myy - 50, 100, 100);
+					updateLabel();
 				}
 			});
 	  }
@@ -138,11 +163,31 @@ public class Bomb {
   		timeWindow.bomb = this;
 	  }
 	  
+	  private void moveLabel(float x, float y) {
+		  label.setBounds(x, y, 80, 20);
+	  }
+	  
+	  public void updateLabel() {
+		  label.setText((CharSequence) Integer.toString(currentSeconds) + ":" + Integer.toString(currentCentiSeconds));
+		  moveLabel(body.getPosition().x * BTWORLD - 50, body.getPosition().y * BTWORLD - 50);
+	  }
+	  
 	  public void reset(float posX, float posY) {
 		   body.setTransform(posX, posY, 0);
 		   body.setLinearVelocity(new Vector2(0,0));
 		   body.setAngularVelocity(0);
 		   body.setAwake(true);
+	  }
+	  
+	  public void updateTime() {
+		  float timeInCentiSeconds = (float) countdownTime * 100 / 60;
+		  currentCentiSeconds = (int) (timeInCentiSeconds % 100);
+		  currentSeconds = (int) Math.floor(timeInCentiSeconds / 100);
+	  }
+	  
+	  public void resetCurrentTime() {
+		  currentCentiSeconds = centiSeconds;
+		  currentSeconds = seconds;
 	  }
 }
 
