@@ -6,6 +6,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
@@ -21,10 +25,13 @@ import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class Boost implements ApplicationListener {
 	   OrthographicCamera camera;
@@ -57,9 +64,43 @@ public class Boost implements ApplicationListener {
 	   RayCastCallback callBack;
 	   
 	   ContactListener contactListener;
+	   
+	   Label fuckLabel;
+	   
+	   Texture crateT;
+	   Texture brickT;
+	   Texture metal;
+	   Texture ballT;
+	   Sprite ballS;
+	   Texture detT;
+	   Texture clock;
+	   Sprite detS;
+	   Array<Sprite> wallSprites;
+	   SpriteBatch batch;
+	   float[] angles;
+	   int dir;
+	   BitmapFont font;
+	   RotatableText text;
+	   float an = 0;
+
+
 
 	   @Override
 	   public void create() {
+		   //Images
+		   crateT = new Texture(Gdx.files.internal("crate.jpg"));
+		   brickT = new Texture(Gdx.files.internal("brick043.gif"));
+		   metal = new Texture(Gdx.files.internal("metal.jpg"));
+		   ballT = new Texture(Gdx.files.internal("ball.png"));
+		   detT = new Texture(Gdx.files.internal("detector.png"));
+		   clock = new Texture(Gdx.files.internal("clock.jpg"));
+		   angles = new float[] {0, (float) Math.PI/6, (float) (Math.PI/4), (float) (Math.PI/3), (float) (2 * Math.PI/3), (float) (3*Math.PI/4), (float) (5*Math.PI/6)};
+
+		   batch = new SpriteBatch();
+		   
+		  
+		   
+		   // Detector beam
 		   callBack = new RayCastCallback() {
 			   @Override
 			   public float reportRayFixture(Fixture fix, Vector2 p, Vector2 normal, float fraction) {
@@ -69,6 +110,11 @@ public class Boost implements ApplicationListener {
 		   };
 		     
 		   loadLevel(levels.level15);
+		   
+	       detS = new Sprite(detT, 0, 0, 64, 64);
+	       detS.setSize(40, 40);
+	       detS.setPosition(p1.x * 40 - 4, p1.y * 40 - 4);
+	       detS.setRotation(90 - dir * 90);
 		   
 		   // gdx stuff
 		   Gdx.app.log("MyTag", "my informative message");
@@ -83,16 +129,67 @@ public class Boost implements ApplicationListener {
 
 	       timeWindow = new TimeWindow(stage);
 	       timeWindow.window.setVisible(false);
+	       
+	       
+	       // Screwing around with a label
+	    
+	       
+	       FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("TickingTimebombBB.ttf"));
+	       font = generator.generateFont(273);
+	       font.setColor(Color.RED);
+	       generator.dispose();
+		   LabelStyle style = new LabelStyle();
+		   style.font = font;
+		   style.fontColor = Color.RED;
+		   fuckLabel = new Label("12345:67890", style);
+		   fuckLabel.setPosition(400, 400);
+		   fuckLabel.setOrigin(0, 0);
+		   fuckLabel.setWidth(1);
+		   fuckLabel.setRotation(50);
+		   fuckLabel.scale(2);
+		   
+		   text = new RotatableText("hui", font, batch);
+		   //stage.addActor(fuckLabel);
 
 		   
 		   // Walls		   		 
 	       int angle;
 	       
+	       wallSprites = new Array<Sprite>();
+	       Sprite sprite;
+	       
+		   int k;
+
 		   for (int i = 0; i < coord.length; i++) {
 			   if (coord[i].length == 5) angle = coord[i][4];
 			   else angle = 0;
 			   
 			   new Wall(coord[i][0], coord[i][1], coord[i][2], coord[i][3], angle, world);
+			   if (coord[i][0] == coord[i][2]) {
+				   for (k = 0; k < (coord[i][3] - coord[i][1] + 1) * 40/123; k++) {
+					   sprite = new Sprite(metal, 0, 0, 40, 123);
+					   sprite.setPosition(coord[i][0] * 40 - 40, coord[i][1] * 40 - 40 + 123 * k);
+					   wallSprites.add(sprite);
+				   }
+				   sprite = new Sprite(metal, 0, 0, 40, (coord[i][3] - coord[i][1] + 1) * 40 - k * 123);
+				   sprite.setPosition(coord[i][0] * 40 - 40, coord[i][1] * 40 - 40 + 123 * k);
+				   wallSprites.add(sprite);
+			   }
+			   
+			   if (coord[i][1] == coord[i][3]) {
+				   for (k = 0; k < (coord[i][2] - coord[i][0] + 1) * 40/103; k++) {
+					   sprite = new Sprite(metal, 0, 0, 103, 40);
+					   sprite.setPosition(coord[i][0] * 40 - 40 + 103 * k, coord[i][1] * 40 - 40);
+					   sprite.setOrigin((coord[i][2] + coord[i][0] - 1) * 20 - (coord[i][0] - 1) * 40 - k * 103, 20);
+					   sprite.setRotation((float) (angles[angle] * 180 / Math.PI));
+					   wallSprites.add(sprite);
+				   }
+				   sprite = new Sprite(metal, 0, 0, (coord[i][2] - coord[i][0] + 1) * 40 - k * 103, 40);
+				   sprite.setPosition(coord[i][0] * 40 - 40 + 103 * k, coord[i][1] * 40 - 40);
+				   sprite.setOrigin((coord[i][2] + coord[i][0] - 1) * 20 - (coord[i][0] - 1) * 40 - k * 103, 20);
+				   sprite.setRotation((float) (angles[angle] * 180 / Math.PI));
+				   wallSprites.add(sprite);
+			   }
 		   }
 		   
 		   // Bombs
@@ -106,6 +203,7 @@ public class Boost implements ApplicationListener {
 			   bomb.resetCurrentTime();
 			   bomb.updateLabel();
 			   bombs[i] = bomb;
+			   bomb.crate = new Sprite(crateT, 0, 0, 120, 120);
 		   }
 		   
 		   // Bricks
@@ -116,6 +214,9 @@ public class Boost implements ApplicationListener {
 		   if (coordBr != null) {
 			   for (int i = 0; i < coordBr.length; i++) {
 				   brick = new Brick(coordBr[i][0], coordBr[i][1], coordBr[i][2], coordBr[i][3], world);
+				   brick.sprite = new Sprite(brickT, 0, 62, 64, 32);
+				   brick.sprite.setSize(80, 40);
+				   brick.sprite.setOrigin(40, 20);
 				   bricks[i] = brick;
 			   }
 		   }
@@ -139,6 +240,7 @@ public class Boost implements ApplicationListener {
 			});
 	        
 		   ball = new Ball(world, ballInitialPosition);
+		   ballS = new Sprite(ballT, 0, 0, 80, 80);
 		   
 		   contactListener = new ContactListener() {
 			   public void beginContact(Contact contact) {
@@ -195,8 +297,47 @@ public class Boost implements ApplicationListener {
 	      Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 	      Gdx.gl.glEnable(GL10.GL_DEPTH_TEST);
 	      
+	      camera.update();
+	      batch.setProjectionMatrix(camera.combined);
+	      
 	      camera.apply(Gdx.gl10);
 	      renderer.setProjectionMatrix(camera.combined);
+	      
+	      // Animation stuff
+
+	      Bomb bomb;
+	      
+	      for (int i = 0; i < coordB.length; i++) {
+	    	  bomb = bombs[i];
+	    	  bomb.crate.setPosition(bomb.body.getPosition().x * BOX_TO_WORLD - 60, bomb.body.getPosition().y * BOX_TO_WORLD - 60);
+		      bomb.crate.setRotation((float) (bomb.body.getAngle() * 180 / Math.PI));
+		      batch.begin();
+		      bomb.crate.draw(batch);
+		      batch.end();
+	      }
+	      
+	      Brick brick;
+	      
+	      for (int i = 0; i < coordBr.length; i++) {
+	    	  brick = bricks[i];
+	    	  brick.sprite.setPosition(brick.body.getPosition().x * BOX_TO_WORLD - 40, brick.body.getPosition().y * BOX_TO_WORLD - 20);
+	    	  brick.sprite.setRotation((float) (brick.body.getAngle() * 180 / Math.PI + brick.vertical * 90));
+		      batch.begin();
+		      brick.sprite.draw(batch);
+		      batch.end();
+	      }
+	      
+	      for (Sprite sprite:wallSprites) {
+	    	  batch.begin();
+	    	  sprite.draw(batch);
+	    	  batch.end();
+	      }
+	      
+	      ballS.setPosition(ball.body.getPosition().x * BOX_TO_WORLD - 40, ball.body.getPosition().y * BOX_TO_WORLD - 40);
+	      ballS.setRotation((float) (ball.body.getAngle() * 180 / Math.PI));
+	      batch.begin();
+    	  ballS.draw(batch);
+    	  batch.end();
 
 	      //raycast
 	      p2.x= p3.x;
@@ -208,8 +349,13 @@ public class Boost implements ApplicationListener {
 	      renderer.line(p1.x * BOX_TO_WORLD, p1.y * BOX_TO_WORLD, p2.x * BOX_TO_WORLD, p2.y * BOX_TO_WORLD);
 	      renderer.end();
 	      
-	       
-	      
+	      batch.begin();
+    	  detS.draw(batch);
+    	  batch.end();
+    	  
+    	  an += 1;
+    	  text.draw(200, 200, an);
+    	  
 	      // cleaning up explosions	     
 	      for (Explosion e:explosions) {
 	    	  e.cleanupDelay -= 1;
@@ -219,7 +365,9 @@ public class Boost implements ApplicationListener {
 	    	  }
 	      }
 	      
-	      debugRenderer.render(world, debugMatrix);
+	      //debugRenderer.render(world, debugMatrix);
+		   fuckLabel.rotate(50f);
+
 	      stage.draw();
 	      
 	      if (play) {
@@ -283,10 +431,11 @@ public class Boost implements ApplicationListener {
 		   }
 		   
 		   p1 = new Vector2((float) level.detector.x / 5 - 0.1f, (float) level.detector.y / 5 - 0.1f);
-		   if (level.detector.direction == 0) p3 = new Vector2(p1.x, 50);
-		   if (level.detector.direction == 1) p3 = new Vector2(50, p1.y);
-		   if (level.detector.direction == 2) p3 = new Vector2(p1.x, -1);
-		   if (level.detector.direction == 3) p3 = new Vector2(-1, p1.y);
+		   dir = level.detector.direction; 
+		   if (dir == 0) p3 = new Vector2(p1.x, 50);
+		   if (dir == 1) p3 = new Vector2(50, p1.y);
+		   if (dir == 2) p3 = new Vector2(p1.x, -1);
+		   if (dir == 3) p3 = new Vector2(-1, p1.y);
 		   p2 = new Vector2(p3.x, p3.y);
 	   }
 	   

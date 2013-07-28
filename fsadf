@@ -1,0 +1,53 @@
+commit 0085f82cca5846e8ed22f5b8a9e1daa8a06c42f2
+Author: Anton Strizhov <anton.strizhov@gmail.com>
+Date:   Wed Jul 17 13:28:18 2013 -0700
+
+    8 levels
+
+commit 1acae8cfa5b48c32f4f5964726404ba57e6ccc1c
+Author: Anton Strizhov <anton.strizhov@gmail.com>
+Date:   Tue Jul 16 11:13:31 2013 -0700
+
+    time in seconds and centiSeconds
+
+commit db9eec323fac9e4bf774f6ddaefea4a228531dbe
+Author: Anton Strizhov <anton.strizhov@gmail.com>
+Date:   Tue Jul 16 10:22:29 2013 -0700
+
+    detector and skew walls
+
+commit 2b6d084808efa4f145ac16ecc50050f9044f4138
+Author: Anton Strizhov <anton.strizhov@gmail.com>
+Date:   Mon Jul 15 10:51:01 2013 -0700
+
+    timeWindow and discretisation
+
+commit d8d1cb3a81f2ed51870e56788d352b9a2e22de23
+Author: Anton Strizhov <anton.strizhov@gmail.com>
+Date:   Fri Jul 12 20:08:57 2013 -0700
+
+    started doing interface
+
+commit 09436a43163f8b5a24c1d8456d1a7f82b5ef37a7
+Author: Anton Strizhov <anton.strizhov@gmail.com>
+Date:   Fri Jul 5 03:56:20 2013 -0700
+
+    finished explosions
+
+commit 150b4321ee2cc73872b7656c9aaac1eb81520e51
+Author: Anton Strizhov <anton.strizhov@gmail.com>
+Date:   Thu Jul 4 04:19:37 2013 -0700
+
+    explosions
+
+commit fd5b4e4dd5081459989bab826f6acb7f24476977
+Author: Anton Strizhov <anton.strizhov@gmail.com>
+Date:   Thu Jul 4 02:37:04 2013 -0700
+
+    .
+
+commit 783196004fdfc4a934e9df60a07f1364278d2adb
+Author: Anton Strizhov <anton.strizhov@gmail.com>
+Date:   Thu Jul 4 00:39:39 2013 -0700
+
+    initial commit

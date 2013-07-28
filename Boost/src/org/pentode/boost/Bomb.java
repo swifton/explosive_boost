@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -42,6 +43,7 @@ public class Bomb {
 	QueryCallback AABBCallback;
 	World world;
 	Label label;
+	Sprite crate;
 	
 	  public Bomb(int x, int y, World wrld, Stage stage, TimeWindow w) {
 		  world = wrld;
@@ -98,6 +100,7 @@ public class Bomb {
 			skinn.add("badlogic", new Texture("droplet.png"));
 
 			final Image sourceImage = new Image(skinn, "badlogic");
+			//sourceImage.setRotation(90);
 			sourceImage.setBounds(x * BTWORLD - 50, y * BTWORLD - 50, 100, 100);
 			stage.addActor(sourceImage);
 			

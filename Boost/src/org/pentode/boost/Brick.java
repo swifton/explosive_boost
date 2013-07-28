@@ -1,5 +1,6 @@
 package org.pentode.boost;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -12,10 +13,15 @@ public class Brick {
 	Body body;
 	float centerX;
 	float centerY;
+	Sprite sprite;
+	int vertical;
 	
 	public Brick(int x1, int y1, int x2, int y2, World world) {
 		centerX = (x1 + x2 - 1)*0.1f;
 		centerY = (y1 + y2 - 1)*0.1f;
+		
+		if (x2 == x1) vertical = 1;
+		else vertical = 0;
 		
 		BodyDef def = new BodyDef(); 
 		FixtureDef fixtureDef = new FixtureDef();
