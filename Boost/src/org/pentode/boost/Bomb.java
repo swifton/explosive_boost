@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -24,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Payload;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Source;
+import com.badlogic.gdx.utils.Array;
 
 public class Bomb {
 	Body body;
@@ -45,7 +47,9 @@ public class Bomb {
 	Label label;
 	Sprite crate;
 	
-	  public Bomb(int x, int y, World wrld, Stage stage, TimeWindow w) {
+	  public Bomb(int x, int y, World wrld, Stage stage, TimeWindow w, int sec, int cen) {
+		  seconds = sec;
+		  centiSeconds = cen;
 		  world = wrld;
 		  timeWindow = w;
 		  stagee = stage;
@@ -56,6 +60,8 @@ public class Bomb {
 		  Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 		  label = new Label("", skin);
 		  stage.addActor(label);
+		  resetCurrentTime();
+		  updateLabel();
 	   }
 	  
 	  public void createBody(float x, float y, World world) {
@@ -191,6 +197,28 @@ public class Bomb {
 	  public void resetCurrentTime() {
 		  currentCentiSeconds = centiSeconds;
 		  currentSeconds = seconds;
+	  }
+	  
+	  public void draw(SpriteBatch batch) {
+		  if (body == null) return;
+		  crate.setPosition(body.getPosition().x * BTWORLD - 60, body.getPosition().y * BTWORLD - 60);
+	      crate.setRotation((float) (body.getAngle() * 180 / Math.PI));
+	      batch.begin();
+	      crate.draw(batch);
+	      batch.end();
+	  }
+	  
+	  public void countDown(Array<Explosion> explosions) {
+		  if (countdownTime == 0) {
+    		  Explosion explosion = new Explosion(23, body.getPosition(), world);
+    		  explosions.add(explosion);
+    		  world.destroyBody(body);
+    	  }
+    	  if (countdownTime > -1) {
+	    	  countdownTime -= 1;
+	    	  updateTime();
+	    	  updateLabel();
+    	  }
 	  }
 }
 

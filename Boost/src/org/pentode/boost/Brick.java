@@ -1,6 +1,7 @@
 package org.pentode.boost;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -15,6 +16,8 @@ public class Brick {
 	float centerY;
 	Sprite sprite;
 	int vertical;
+	static final float BOX_TO_WORLD = 200f;
+
 	
 	public Brick(int x1, int y1, int x2, int y2, World world) {
 		centerX = (x1 + x2 - 1)*0.1f;
@@ -48,5 +51,13 @@ public class Brick {
 		body.setLinearVelocity(new Vector2(0,0));
 		body.setAngularVelocity(0);
 		body.setAwake(true);
+	}
+	
+	public void draw(SpriteBatch batch) {
+		sprite.setPosition(body.getPosition().x * BOX_TO_WORLD - 40, body.getPosition().y * BOX_TO_WORLD - 20);
+  	  	sprite.setRotation((float) (body.getAngle() * 180 / Math.PI + vertical * 90));
+	    batch.begin();
+	    sprite.draw(batch);
+	    batch.end();
 	}
 }

@@ -8,5 +8,5 @@ public class Level {
 	int [][] bricks;
 	int [][] brickWall; // see details in loadLevel
 	Vector2 ball;
-	Detector detector;
+	DetCoord detector;
 }

@@ -1,6 +1,8 @@
 package org.pentode.boost;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -32,7 +34,42 @@ public class Wall {
 		body.setTransform(bodyX, bodyY, angles[angle]);
 	}
 	
-	public void createWallSprites(int x1, int y1, int x2, int y2, int angle) {
-		
+	public void createSprites(int x1, int y1, int x2, int y2, int angle, Texture metal) {
+		int k;
+
+		if (x1 == x2) {
+			int s = (int) Math.floor((y2 - y1 + 1) * 40/123);
+			sprites = new Sprite[s + 1];
+			for (k = 0; k < s; k++) {
+				createOneSprite(40, 123, x1 * 40 - 40, y1 * 40 - 40 + 123 * k, k, metal, 0, 0, 0);
+			}
+			createOneSprite(40, (y2 - y1 + 1) * 40 - k * 123, x1 * 40 - 40, y1 * 40 - 40 + 123 * k, k, metal, 0, 0, 0);
+		}
+		   
+		if (y1 == y2) {
+			int s = (int) Math.floor((x2 - x1 + 1) * 40/103);
+			sprites = new Sprite[s + 1];
+			for (k = 0; k < s; k++) {
+				createOneSprite(103, 40, x1 * 40 - 40 + 103 * k, y1 * 40 - 40, k, metal, (x2 + x1 - 1) * 20 - (x1 - 1) * 40 - k * 103, 20, angle);
+			}
+			createOneSprite((x2 - x1 + 1) * 40 - k * 103, 40, x1 * 40 - 40 + 103 * k, y1 * 40 - 40, k, metal, (x2 + x1 - 1) * 20 - (x1 - 1) * 40 - k * 103, 20, angle);
+		}
+	}
+	
+	private void createOneSprite(int wid, int hei, int posX, int posY, int k, Texture metal, int orX, int orY, int angle) { 
+		Sprite sprite;
+		sprite = new Sprite(metal, 0, 0, wid, hei);
+		sprite.setPosition(posX, posY);
+		sprite.setOrigin(orX, orY);
+		sprite.setRotation((float) (angles[angle] * 180 / Math.PI));
+		sprites[k] = sprite;
+	}
+	
+	public void draw(SpriteBatch batch) {
+		for (int k = 0; k < sprites.length; k++) {
+			batch.begin();
+		    sprites[k].draw(batch);
+		    batch.end();
+		}
 	}
 }

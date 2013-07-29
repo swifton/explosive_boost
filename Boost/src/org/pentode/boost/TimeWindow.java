@@ -1,6 +1,7 @@
 package org.pentode.boost;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class TimeWindow {
@@ -53,6 +55,7 @@ public class TimeWindow {
 		window.add(splitPane);
 		window.pack();
 		stage.addActor(window);
+		window.setVisible(false);
 		
 		close.addListener(new ClickListener() {
 		    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -97,3 +100,14 @@ public class TimeWindow {
 		});
 	}
 }
+
+//LabelStyle style = new LabelStyle();
+//style.font = font;
+//style.fontColor = Color.RED;
+//fuckLabel = new Label("12345:67890", style);
+//fuckLabel.setPosition(400, 400);
+//fuckLabel.setOrigin(0, 0);
+//fuckLabel.setWidth(1);
+//fuckLabel.setRotation(50);
+//fuckLabel.scale(2);
+//stage.addActor(fuckLabel)

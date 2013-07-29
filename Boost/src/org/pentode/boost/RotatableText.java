@@ -22,7 +22,7 @@ public class RotatableText {
 		matrix.rotate(new Vector3(0, 0, 1), angle);
 	    batch.setTransformMatrix(matrix);
 	    batch.begin();
-	    font.draw(batch, "The", 0, 0);
+	    font.draw(batch, text, 0, 0);
 	    batch.end();
 	    matrix.setToRotation(new Vector3(0, 0, 1), 0);
 	    batch.setTransformMatrix(matrix);
