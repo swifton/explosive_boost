@@ -2,7 +2,6 @@ package org.pentode.boost;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -23,7 +22,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class Boost implements ApplicationListener {
 	   OrthographicCamera camera;
@@ -89,11 +87,8 @@ public class Boost implements ApplicationListener {
 		   debugRenderer = new Box2DDebugRenderer();
 
 	       // Screwing around with a label
-	       FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("TickingTimebombBB.ttf"));
-	       font = generator.generateFont(273);
-	       font.setColor(Color.RED);
-	       generator.dispose();
-		   text = new RotatableText("Xyu", font, batch);
+	       
+		   text = new RotatableText("Xyu", batch);
 		   
 		   timeWindow = new TimeWindow(stage);
 		   createBodies();
@@ -143,9 +138,11 @@ public class Boost implements ApplicationListener {
 		   Bomb bomb;
 		   
 		   for (int i = 0; i < coordB.length; i++) {
-			   bomb = new Bomb(coordB[i][0], coordB[i][1], world, stage, timeWindow, coordB[i][2], coordB[i][3]);
+			   bomb = new Bomb(coordB[i][0], coordB[i][1], world, stage, timeWindow, coordB[i][2], coordB[i][3], batch);
 			   bombs[i] = bomb;
-			   bomb.crate = new Sprite(crateT, 0, 0, 120, 120);
+			   bomb.crate = new Sprite(crateT, 28, 26, 443, 444);
+			   bomb.crate.setSize(120, 120);
+			   bomb.crate.setOrigin(60, 60);
 		   }
 		   
 		   // Bricks
@@ -203,7 +200,7 @@ public class Boost implements ApplicationListener {
 		   renderSprites();
 		   detector.draw(batch, renderer);
 		   stage.draw();
-		 //debugRenderer.render(world, debugMatrix);
+		   debugRenderer.render(world, debugMatrix);
 	  	  
 		   cleanupExplosions();
 

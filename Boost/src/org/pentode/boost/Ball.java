@@ -44,10 +44,10 @@ public class Ball {
 	   }
 	 
 	 public void reset(float posX, float posY) {
-		   body.setTransform(posX, posY, 0);
-		   body.setLinearVelocity(new Vector2(0,0));
-		   body.setAngularVelocity(0);
-		   body.setAwake(true);
+		 body.setTransform(posX, posY, 0);
+		 body.setLinearVelocity(new Vector2(0,0));
+		 body.setAngularVelocity(0);
+		 body.setAwake(true);
 	  }
 	 
 	 public void draw(SpriteBatch batch) {

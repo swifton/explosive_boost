@@ -1,7 +1,10 @@
 package org.pentode.boost;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
@@ -10,10 +13,15 @@ public class RotatableText {
 	BitmapFont font; 
 	SpriteBatch batch;
 
-	public RotatableText(String t, BitmapFont f, SpriteBatch b) {
-		 text = t;
-		 font = f;
-		 batch = b;
+	public RotatableText(String t, SpriteBatch b) {
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("TickingTimebombBB.ttf"));
+	    font = generator.generateFont(57);//273);
+	    font.setColor(Color.RED);
+	    font.setFixedWidthGlyphs("0123456789");
+	    generator.dispose();
+	    
+		text = t;
+		batch = b;
 	 }
 	
 	public void draw(float x, float y, float angle) {
