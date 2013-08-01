@@ -174,6 +174,7 @@ public class Boost implements ApplicationListener {
 		   playButton.setText("Stop");
 		   if(play) {
 			   resetLevel();
+			   world.clearForces();
 			   playButton.setText("Play");
 		   }			   
 		   else {
@@ -203,11 +204,12 @@ public class Boost implements ApplicationListener {
 		   debugRenderer.render(world, debugMatrix);
 	  	  
 		   cleanupExplosions();
+		   
+		   if (detector.detect(world)) pausePlay();
 
 		   if (play) {
 			   for (int i = 0; i < coordB.length; i++) bombs[i].countDown(explosions);
 			   world.step(1/60f, 6, 2);
-			   if (detector.detect(world)) pausePlay();
 		   }
 	    	  
 		   Gdx.gl.glDisable(GL10.GL_DEPTH_TEST);

@@ -138,13 +138,13 @@ public class Bomb {
 				Payload payload = new Payload();
 				payload.setObject("crap");
 
-				payload.setDragActor(new Label("Some payload!", skinn));
+				payload.setDragActor(new Label("", skinn));
 
-				Label validLabel = new Label("Some payload!", skinn);
+				Label validLabel = new Label("", skinn);
 				validLabel.setColor(0, 1, 0, 1);
 				payload.setValidDragActor(validLabel);
 
-				Label invalidLabel = new Label("Some payload!", skinn);
+				Label invalidLabel = new Label("", skinn);
 				invalidLabel.setColor(1, 0, 0, 1);
 				payload.setInvalidDragActor(invalidLabel);
 			
@@ -157,14 +157,16 @@ public class Bomb {
 
 				float myx = x + sourceImage.getX();
 				float myy = y + sourceImage.getY();
-				startX = ((float)Math.round((myx * 5)/BTWORLD))/5 - 0.1f;
-				startY = ((float)Math.round((myy * 5)/BTWORLD))/5 - 0.1f;
-				myx = startX * BTWORLD;
-				myy = startY * BTWORLD;
+				float newStartX = ((float)Math.round((myx * 5)/BTWORLD))/5 - 0.1f;
+				float newStartY = ((float)Math.round((myy * 5)/BTWORLD))/5 - 0.1f;
+				myx = newStartX * BTWORLD;
+				myy = newStartY * BTWORLD;
 					
-			    world.QueryAABB(AABBCallback, startX - 0.1f, startY - 0.1f, startX + 0.1f, startY + 0.1f);
+			    world.QueryAABB(AABBCallback, newStartX - 0.1f, newStartY - 0.1f, newStartX + 0.1f, newStartY + 0.1f);
 			    if (!droppable) return;
-			    	
+			    
+			    startX = newStartX;
+			    startY = newStartY;
 				body.setTransform(new Vector2(startX, startY), 0);
 				sourceImage.setBounds(myx - 50, myy - 50, 100, 100);
 				updateLabel();

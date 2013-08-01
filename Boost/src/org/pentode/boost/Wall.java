@@ -13,13 +13,23 @@ public class Wall {
 	Body body;
 	float [] angles;
 	Sprite[] sprites;
+	int x1, x2, y1, y2, angle;
 
-	public Wall (int x1, int y1, int x2, int y2, int angle, World world) {
-		float bodyX = (x1 + x2 - 1)*0.1f + 0.005f;
-		float bodyY = (y1 + y2 - 1)*0.1f + 0.005f;
+	public Wall (int x11, int y11, int x22, int y22, int a, World world) {
+		x1 = x11;
+		x2 = x22;
+		y1 = y11;
+		y2 = y22;
+		angle = a;
 		
 		angles = new float[] {0, (float) Math.PI/6, (float) (Math.PI/4), (float) (Math.PI/3), (float) (2 * Math.PI/3), (float) (3*Math.PI/4), (float) (5*Math.PI/6)};
 		
+		createBody(world);
+	}
+	
+	public void createBody(World world) {
+		float bodyX = (x1 + x2 - 1)*0.1f + 0.005f;
+		float bodyY = (y1 + y2 - 1)*0.1f + 0.005f;
 		BodyDef wallBodyDef; 
 		   
 		wallBodyDef =new BodyDef();

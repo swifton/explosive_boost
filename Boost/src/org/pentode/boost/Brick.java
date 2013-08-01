@@ -16,15 +16,26 @@ public class Brick {
 	float centerY;
 	Sprite sprite;
 	int vertical;
+	int x1, x2, y1, y2;
 	static final float BOX_TO_WORLD = 200f;
 
 	
-	public Brick(int x1, int y1, int x2, int y2, World world) {
-		centerX = (x1 + x2 - 1)*0.1f;
-		centerY = (y1 + y2 - 1)*0.1f;
+	public Brick(int x11, int y11, int x22, int y22, World world) {
+		x1 = x11;
+		x2 = x22;
+		y1 = y11;
+		y2 = y22;
 		
 		if (x2 == x1) vertical = 1;
 		else vertical = 0;
+		
+		createBody(world);
+	}
+	
+	public void createBody(World world) {
+		centerX = (x1 + x2 - 1)*0.1f;
+		centerY = (y1 + y2 - 1)*0.1f;
+		
 		
 		BodyDef def = new BodyDef(); 
 		FixtureDef fixtureDef = new FixtureDef();
