@@ -172,17 +172,18 @@ public class Boost implements ApplicationListener {
 	   
 	   private void pausePlay() {
 		   playButton.setText("Stop");
-		   if(play) {
-			   resetLevel();
+		   play = !play;
+		   resetLevel();
+		   if(!play) {
 			   world.clearForces();
 			   playButton.setText("Play");
 		   }			   
 		   else {
 			   for (int k = 0; k < coordB.length; k++) {
-				   bombs[k].countdownTime = (int) Math.floor( ((float)bombs[k].seconds + (float)bombs[k].centiSeconds/100)*60);
+				   bombs[k].countdownTime = (int) Math.floor(((float)bombs[k].seconds + (float)bombs[k].centiSeconds/100)*60);
 			   }
 		   }
-		   play = !play;
+		   
 		   
 		   for (Bomb bomb:bombs) bomb.play = play; 
 		}
@@ -277,23 +278,37 @@ public class Boost implements ApplicationListener {
 		}
 	   
 	   private void resetLevel() {
-		   ball.reset(ballInitialPosition.x, ballInitialPosition.y);
+		   //for (Explosion e:explosions) {
+			//   e.cleanupDelay = 0;
+		   //}
+		   cleanupExplosions();
+		   
+		   world.dispose();
+		   world = new World(new Vector2(0, -10), true);
+		   //ball.reset(ballInitialPosition.x, ballInitialPosition.y);
+		   ball.createBody(world);
 		   lastBody = null;
 		   Bomb bomb;
 		   
 		   for (int j = 0; j < coordBr.length; j++) {
-			   bricks[j].reset();
+			   bricks[j].createBody(world);
+			//   bricks[j].reset();
 		   }
 		   
 		   for (int k = 0; k < coordB.length; k++) {
 			   bomb = bombs[k];
+			   bomb.createBody(world);
 			   if (bomb.countdownTime < 0) {
-				   bomb.createBody(bomb.startX, bomb.startY, world);		   
+				//   bomb.createBody(bomb.startX, bomb.startY, world);		   
 			   }
 			   
-			   bomb.reset(bomb.startX, bomb.startY);
+			   //bomb.reset(bomb.startX, bomb.startY);
 			   bomb.resetCurrentTime();
 			   bomb.updateLabel();
+		   }
+		   
+		   for (int k = 0; k < walls.length; k++) {
+			   walls[k].createBody(world);
 		   }
 	   }
 	   

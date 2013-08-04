@@ -56,7 +56,7 @@ public class Bomb {
 		stagee = stage;
 		startX = x * 0.2f - 0.1f;
 		startY = y * 0.2f - 0.1f;
-		createBody(x, y, world);
+		createBody(world);
 		createDragDrop(startX, startY, stage);
 		Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 		label = new Label("", skin);
@@ -66,14 +66,15 @@ public class Bomb {
 		time = new RotatableText("00:00", batch);
 	}
 	  
-	public void createBody(float x, float y, World world) {
+	public void createBody(World wrld) {
+		world = wrld;
 		BodyDef bombDef;	   
 		   
 		FixtureDef bombFixtureDef;
 		 
 		bombDef = new BodyDef();
 		bombDef.type = BodyType.DynamicBody;
-		bombDef.position.set(new Vector2(x * 0.2f - 0.1f, y * 0.2f - 0.1f));
+		bombDef.position.set(new Vector2(startX, startY));
 		   
 		PolygonShape bombBox;
 		bombBox = new PolygonShape();
@@ -168,6 +169,8 @@ public class Bomb {
 			    startX = newStartX;
 			    startY = newStartY;
 				body.setTransform(new Vector2(startX, startY), 0);
+			    //world.destroyBody(body);
+			    //createBody(world);
 				sourceImage.setBounds(myx - 50, myy - 50, 100, 100);
 				updateLabel();
 			}
