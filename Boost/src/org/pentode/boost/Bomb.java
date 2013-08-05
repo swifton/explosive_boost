@@ -224,10 +224,15 @@ public class Bomb {
     		explosions.add(explosion);
     		world.destroyBody(body);
     	}
+		
     	if (countdownTime > -1) {
 	    	countdownTime -= 1;
 	    	updateTime();
 	    	updateLabel();
+    	}
+    	
+    	if (countdownTime == -1) {
+    		body = null;
     	}
 	}
 	

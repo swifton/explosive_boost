@@ -65,6 +65,7 @@ public class Boost implements ApplicationListener {
 	   Texture ballT;
 	   Texture detT;
 	   Sprite detS;
+
 	   SpriteBatch batch;
 	   int dir;
 	   BitmapFont font;
@@ -85,10 +86,6 @@ public class Boost implements ApplicationListener {
 		   
 		   renderer = new ShapeRenderer();
 		   debugRenderer = new Box2DDebugRenderer();
-
-	       // Screwing around with a label
-	       
-		   text = new RotatableText("Xyu", batch);
 		   
 		   timeWindow = new TimeWindow(stage);
 		   createBodies();
@@ -97,6 +94,8 @@ public class Boost implements ApplicationListener {
 
 		   debugMatrix = new Matrix4(camera.combined);
 		   debugMatrix.scale(BOX_TO_WORLD, BOX_TO_WORLD, 1f);
+
+		   //effect.free();
 	   }
 	  
 	   private void createPlayButton() {
@@ -167,7 +166,6 @@ public class Boost implements ApplicationListener {
 		   metal = new Texture(Gdx.files.internal("metal.jpg"));
 		   ballT = new Texture(Gdx.files.internal("ball.png"));
 		   detT = new Texture(Gdx.files.internal("detector.png"));
-
 	   }
 	   
 	   private void pausePlay() {
@@ -198,6 +196,10 @@ public class Boost implements ApplicationListener {
 		   batch.setProjectionMatrix(camera.combined);
 		   camera.apply(Gdx.gl10);
 		   renderer.setProjectionMatrix(camera.combined);
+		   
+		   for (Explosion e:explosions) {
+			   e.draw(batch);
+		   }
 	      
 		   renderSprites();
 		   detector.draw(batch, renderer);
