@@ -72,6 +72,7 @@ public class Boost implements ApplicationListener {
 	   RotatableText text;
 	   float an = 0;
 	   Detector detector;
+	   int timeToWin = -1;
 
 	   @Override
 	   public void create() {
@@ -179,6 +180,8 @@ public class Boost implements ApplicationListener {
 		   else {
 			   for (int k = 0; k < coordB.length; k++) {
 				   bombs[k].countdownTime = (int) Math.floor(((float)bombs[k].seconds + (float)bombs[k].centiSeconds/100)*60);
+				   timeToWin = -1;
+				   detector.on = true;
 			   }
 		   }
 		   
@@ -208,11 +211,17 @@ public class Boost implements ApplicationListener {
 	  	  
 		   cleanupExplosions();
 		   
-		   if (detector.detect(world)) pausePlay();
+		   if (detector.detect(world)) {
+			   timeToWin = 50;
+			   Gdx.app.log("Xyu", Integer.toString(timeToWin));
+			   detector.on = false;
+		   }
 
 		   if (play) {
 			   for (int i = 0; i < coordB.length; i++) bombs[i].countDown(explosions);
 			   world.step(1/60f, 6, 2);
+			   timeToWin -= 1;
+			   if (timeToWin == 0) pausePlay();
 		   }
 	    	  
 		   Gdx.gl.glDisable(GL10.GL_DEPTH_TEST);
@@ -290,6 +299,7 @@ public class Boost implements ApplicationListener {
 		   //ball.reset(ballInitialPosition.x, ballInitialPosition.y);
 		   ball.createBody(world);
 		   lastBody = null;
+		   detector.toDetect = ball.body;
 		   Bomb bomb;
 		   
 		   for (int j = 0; j < coordBr.length; j++) {

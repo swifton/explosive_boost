@@ -19,7 +19,7 @@ public class Detector {
 	Vector2 p1, p2, p3;
 	Sprite sprite;
 	static final float BOX_TO_WORLD = 200f;
-
+	boolean on = true;
 
 	
 	public Detector(int x, int y, int d, Body tD, Texture texture) {
@@ -34,7 +34,7 @@ public class Detector {
 		
 	    sprite = new Sprite(texture, 0, 0, 64, 64);
 	    sprite.setSize(40, 40);
-	    sprite.setPosition(p1.x * 40 - 4, p1.y * 40 - 4);
+	    sprite.setPosition(p1.x * BOX_TO_WORLD - 20, p1.y * BOX_TO_WORLD - 20);
 	    sprite.setRotation(90 - d * 90);
 		
 		callBack = new RayCastCallback() {
@@ -59,6 +59,7 @@ public class Detector {
 		p2.x= p3.x;
 	    p2.y= p3.y;
 	    world.rayCast(callBack , p1, p2);
+	    if (!on) return false;
   	  	if (lastBody == toDetect) {
   	  		lastBody = null;
 			return true;
