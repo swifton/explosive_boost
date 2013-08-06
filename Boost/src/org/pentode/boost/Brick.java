@@ -53,6 +53,7 @@ public class Brick {
 
 		body = world.createBody(def);
 		body.createFixture(fixtureDef);
+		body.setUserData("brick");
 
 		box.dispose();
 	}

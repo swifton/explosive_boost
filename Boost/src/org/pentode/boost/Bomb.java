@@ -1,6 +1,7 @@
 package org.pentode.boost;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -47,6 +48,7 @@ public class Bomb {
 	Label label;
 	Sprite crate;
 	RotatableText time;
+	Sound sound;
 	
 	public Bomb(int x, int y, World wrld, Stage stage, TimeWindow w, int sec, int cen, SpriteBatch batch) {
 		seconds = sec;
@@ -223,6 +225,7 @@ public class Bomb {
     		Explosion explosion = new Explosion(23, body.getPosition(), world);
     		explosions.add(explosion);
     		world.destroyBody(body);
+    		sound.play();
     	}
 		
     	if (countdownTime > -1) {

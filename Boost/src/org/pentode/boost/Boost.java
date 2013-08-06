@@ -2,6 +2,7 @@ package org.pentode.boost;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,7 +14,10 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -74,11 +78,27 @@ public class Boost implements ApplicationListener {
 	   Detector detector;
 	   int timeToWin = -1;
 
+	   Sound explosionSound;
+	   Sound ballSound;
+	   Sound detectorSound;
+	   Sound brickSound;
+	   
+	   PagedScrollPane levelSelect;
+
 	   @Override
 	   public void create() {
+		   Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+		   levelSelect = new PagedScrollPane();
+		   
 		   loadLevel(levels.level13);
 		   
 		   loadTextures();
+		   
+		   explosionSound= Gdx.audio.newSound(Gdx.files.internal("explosion.wav"));
+		   ballSound= Gdx.audio.newSound(Gdx.files.internal("ball.wav"));
+		   detectorSound= Gdx.audio.newSound(Gdx.files.internal("detector.wav"));
+		   brickSound= Gdx.audio.newSound(Gdx.files.internal("brick.wav"));
+		   
 		   batch = new SpriteBatch();
 		   camera = new OrthographicCamera();
 
@@ -95,8 +115,28 @@ public class Boost implements ApplicationListener {
 
 		   debugMatrix = new Matrix4(camera.combined);
 		   debugMatrix.scale(BOX_TO_WORLD, BOX_TO_WORLD, 1f);
+		   
+		   createContactListener();
 
 		   //effect.free();
+	   }
+	   
+	   private void createContactListener() {
+		   contactListener = new ContactListener() {
+               public void beginContact(Contact contact) {
+            	   if (contact.getFixtureB().getBody() == ball.body) {
+            		   ballSound.play();
+            	   }
+            	   
+            	   if (contact.getFixtureB().getBody().getUserData() == "brick") {
+            		   brickSound.play();
+            	   }
+               }
+               
+               public void endContact(Contact contact) {}
+               public void postSolve(Contact contact, ContactImpulse impulse) {}
+               public void preSolve(Contact contact, Manifold oldManifold) {}
+		   };
 	   }
 	  
 	   private void createPlayButton() {
@@ -143,6 +183,7 @@ public class Boost implements ApplicationListener {
 			   bomb.crate = new Sprite(crateT, 28, 26, 443, 444);
 			   bomb.crate.setSize(120, 120);
 			   bomb.crate.setOrigin(60, 60);
+			   bomb.sound = explosionSound;
 		   }
 		   
 		   // Bricks
@@ -185,7 +226,7 @@ public class Boost implements ApplicationListener {
 			   }
 		   }
 		   
-		   
+		   world.setContactListener(contactListener);
 		   for (Bomb bomb:bombs) bomb.play = play; 
 		}
 
@@ -212,9 +253,10 @@ public class Boost implements ApplicationListener {
 		   cleanupExplosions();
 		   
 		   if (detector.detect(world)) {
-			   timeToWin = 50;
+			   timeToWin = 100;
 			   Gdx.app.log("Xyu", Integer.toString(timeToWin));
 			   detector.on = false;
+			   detectorSound.play();
 		   }
 
 		   if (play) {
