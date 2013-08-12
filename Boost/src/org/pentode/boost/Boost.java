@@ -244,7 +244,7 @@ public class Boost implements ApplicationListener {
 		   for (Explosion e:explosions) {
 			   e.draw(batch);
 		   }
-	      
+		   
 		   renderSprites();
 		   detector.draw(batch, renderer);
 		   stage.draw();
