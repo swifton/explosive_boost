@@ -22,14 +22,12 @@ public class Boost implements ApplicationListener {
 
 	   SpriteBatch batch;
 	   
-	   PagedScrollPane levelSelect;
+	   LevelSelect levelSelect;
 	   
 	   Game game;
 
 	   @Override
 	   public void create() {
-		   levelSelect = new PagedScrollPane();
-		   
 		   batch = new SpriteBatch();
 		   camera = new OrthographicCamera();
 
@@ -37,6 +35,7 @@ public class Boost implements ApplicationListener {
 		   Gdx.input.setInputProcessor(stage);
 		   
 		   game = new Game(stage, batch);
+		   levelSelect = new LevelSelect(stage);
 		   
 		   renderer = new ShapeRenderer();
 		   debugRenderer = new Box2DDebugRenderer();
