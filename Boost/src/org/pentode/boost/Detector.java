@@ -35,7 +35,7 @@ public class Detector {
 	    sprite = new Sprite(texture, 0, 0, 64, 64);
 	    sprite.setSize(40, 40);
 	    sprite.setPosition(p1.x * BOX_TO_WORLD - 20, p1.y * BOX_TO_WORLD - 20);
-	    sprite.setRotation(90 - d * 90);
+	    //sprite.setRotation(90 - d * 90);
 		
 		callBack = new RayCastCallback() {
 			   @Override

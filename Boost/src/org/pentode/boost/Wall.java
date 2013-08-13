@@ -36,7 +36,7 @@ public class Wall {
 		wallBodyDef.position.set(new Vector2(bodyX, bodyY));
 		PolygonShape wallBox;
 		wallBox = new PolygonShape();
-		wallBox.setAsBox((x2 - x1 + 1) * 0.1f, (y2 - y1 + 1) * 0.1f);
+		wallBox.setAsBox((x2 - x1 + 1) * 0.1f - 0.005f, (y2 - y1 + 1) * 0.1f - 0.005f);
 		body = world.createBody(wallBodyDef);  
 		
 		body.createFixture(wallBox, 0.0f); 

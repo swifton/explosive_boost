@@ -17,9 +17,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 public class LevelSelect {
 	PagedScrollPane levels;
+	int levelNum = -1;
 	     
 	private Skin skin;
-	private Table container;
+	public Table container;
 
 	public LevelSelect(Stage stage) {
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
@@ -42,7 +43,7 @@ public class LevelSelect {
 			levels.defaults().pad(20, 40, 20, 40);
 			for (int y = 0; y < 3; y++) {
 				levels.row();
-				for (int x = 0; x < 4; x++) {
+				for (int x = 0; x < 5; x++) {
 					levels.add(getLevelButton(c++)).expand().fill();
 				}
 			}
@@ -67,23 +68,23 @@ public class LevelSelect {
         button.stack(new Image(skin.getDrawable("top")), label).expand().fill();
 
         // Randomize the number of stars earned for demonstration purposes
-        int stars = MathUtils.random(-1, +3);
-        Table starTable = new Table();
-        starTable.defaults().pad(5);
-        if (stars >= 0) {
-            for (int star = 0; star < 3; star++) {
-                if (stars > star) {
-                    starTable.add(new Image(skin.getDrawable("star-filled"))).width(20).height(20);
-                } else {
-                    starTable.add(new Image(skin.getDrawable("star-unfilled"))).width(20).height(20);
-                }
-            }          
-        }
+        //int stars = MathUtils.random(-1, +3);
+        ///Table starTable = new Table();
+        //starTable.defaults().pad(5);
+        //if (stars >= 0) {
+        //    for (int star = 0; star < 3; star++) {
+        //        if (stars > star) {
+        //            starTable.add(new Image(skin.getDrawable("star-filled"))).width(20).height(20);
+        //        } else {
+        //            starTable.add(new Image(skin.getDrawable("star-unfilled"))).width(20).height(20);
+        //        }
+        //    }          
+        //}
             
         button.row();
-        button.add(starTable).height(30);
+        //button.add(starTable).height(30);
             
-        button.setName("Level" + Integer.toString(level));
+        button.setName(Integer.toString(level));
         button.addListener(levelClickListener);    
         return button;
     }
@@ -91,7 +92,9 @@ public class LevelSelect {
     public ClickListener levelClickListener = new ClickListener() {
     	@Override
     	public void clicked (InputEvent event, float x, float y) {
-    		System.out.println("Click: " + event.getListenerActor().getName());
+    		//System.out.println("Click: " + event.getListenerActor().getName());
+    		container.setVisible(false);
+    		levelNum = Integer.parseInt(event.getListenerActor().getName());
     	}	
     };
 }

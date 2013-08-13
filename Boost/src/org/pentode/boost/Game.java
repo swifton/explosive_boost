@@ -3,6 +3,7 @@ package org.pentode.boost;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -18,6 +19,8 @@ import com.badlogic.gdx.utils.Array;
 
 public class Game {
 	TimeWindow timeWindow;
+	WinWindow winWindow;
+	private boolean visible = false;
 	
 	World world = new World(new Vector2(0, -10), true);
 	
@@ -40,27 +43,41 @@ public class Game {
 	Sounds sounds = new Sounds();
 	
 	ContactListener contactListener;
+	ShapeRenderer renderer;
 
 	Array<Explosion> explosions = new Array<Explosion>();
 	
 	boolean play = false;
 	TextButton playButton;
+	TextButton selectButton;
 	int timeToWin = -1;
-
 	
-	public Game(Stage stage, SpriteBatch batch) {
+	int levelNum = 1;
+	boolean waiting = true;
+	boolean complete = false;
+	
+	Stage stage; 
+	SpriteBatch batch;
+	
+	public Game(Stage s, SpriteBatch b) {
+		stage = s;
+		batch = b;
+		renderer = new ShapeRenderer();
 		
 		timeWindow = new TimeWindow(stage);
-
-		loadLevel(levels.level13);
-		createBodies(stage, batch);
-		
-		detector = new Detector(detX, detY, detDir, ball.body, textures.detT);
+		winWindow = new WinWindow(stage);
 		createContactListener();
 		createPlayButton(stage);
+		createSelectButton(stage);
 	}
 	
-	private void loadLevel(Level level) {
+	public void loadLevel() {
+		loadLevelCoordinates(levels.list[levelNum - 1]);
+		createBodies();
+		detector = new Detector(detX, detY, detDir, ball.body, textures.detT);
+	}
+	
+	private void loadLevelCoordinates(Level level) {
 		   coord = level.walls;
 		   coordB = level.bombs;
 		   ballInitialPosition = level.ball;
@@ -103,7 +120,7 @@ public class Game {
 		   return C;
 		}
 	   
-	   private void createBodies(Stage stage, SpriteBatch batch) {
+	   private void createBodies() {
 		   ball = new Ball(world, ballInitialPosition, textures.ballT);
 		   
 		// Walls		   		 
@@ -151,12 +168,12 @@ public class Game {
 	   private void createContactListener() {
 		   contactListener = new ContactListener() {
                public void beginContact(Contact contact) {
-            	   if (contact.getFixtureB().getBody() == ball.body) {
+            	   if (contact.getFixtureB().getBody().getUserData() == "ball") {
             		   sounds.ballSound.play();
             	   }
             	   
             	   if (contact.getFixtureB().getBody().getUserData() == "brick") {
-            		   sounds.brickSound.play();
+            		   //sounds.brickSound.play();
             	   }
                }
                
@@ -166,12 +183,24 @@ public class Game {
 		   };
 	   }
 	   
-	   public void render(SpriteBatch batch) {
-		   renderSprites(batch);
+	   public void setVisible(boolean v) {
+		   visible = v;
+		   playButton.setVisible(v);
+		   selectButton.setVisible(v);
+		   
+		   if (!v) timeWindow.window.setVisible(false);
+	   }
+	   
+	   public void render() {
+		   if (!visible) return;
+		   
+		   renderSprites();
 		   
 		   for (Explosion e:explosions) {
 			   e.draw(batch);
 		   }
+		   
+		   detector.draw(batch, renderer);
 		   
 		   cleanupExplosions();
 		   
@@ -186,11 +215,11 @@ public class Game {
 			   for (int i = 0; i < bombs.length; i++) bombs[i].countDown(explosions);
 			   world.step(1/60f, 6, 2);
 			   timeToWin -= 1;
-			   if (timeToWin == 0) pausePlay();
+			   if (timeToWin == 0) complete = true;
 		   }
 	   }
 	   
-	   private void renderSprites(SpriteBatch batch) {
+	   private void renderSprites() {
 		   for (int i = 0; i < bombs.length; i++) bombs[i].draw(batch);
 		   for (int i = 0; i < bricks.length; i++) bricks[i].draw(batch);
 		   for (int i = 0; i < walls.length; i++) walls[i].draw(batch);
@@ -243,6 +272,7 @@ public class Game {
 		   playButton.setY(1070f);
 		   playButton.setWidth(130f);
 		   playButton.setHeight(130f);
+		   playButton.setVisible(visible);
 	       stage.addActor(playButton);
 	        
 	       playButton.addListener(new ChangeListener() {
@@ -254,15 +284,33 @@ public class Game {
 			});
 	   }
 	   
+	   private void createSelectButton(Stage stage) {
+		   Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+		   selectButton = new TextButton("Select level", skin);
+		   selectButton.setX(1785f);
+		   selectButton.setY(930f);
+		   selectButton.setWidth(130f);
+		   selectButton.setHeight(130f);
+		   selectButton.setVisible(visible);
+	       stage.addActor(selectButton);
+	        
+	       selectButton.addListener(new ChangeListener() {
+	        	@Override
+				public void changed (ChangeEvent event, Actor actor) {
+	        		setVisible(false);
+	        		waiting = true;
+	        	}
+	        		
+			});
+	   }
+	   
 	   public void pausePlay() {
-		   playButton.setText("Stop");
+		   playButton.setText("Play");
 		   play = !play;
 		   resetLevel();
-		   if(!play) {
-			   world.clearForces();
-			   playButton.setText("Play");
-		   }			   
-		   else {
+		   if(play) {
+			   timeWindow.window.setVisible(false);
+			   playButton.setText("Stop");
 			   for (int k = 0; k < bombs.length; k++) {
 				   bombs[k].countdownTime = (int) Math.floor(((float)bombs[k].seconds + (float)bombs[k].centiSeconds/100)*60);
 				   timeToWin = -1;

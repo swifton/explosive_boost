@@ -16,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class TimeWindow {
-	Stage stagee;
 	Window window;
 	Label labelSec;
 	Label labelCen;
@@ -24,8 +23,6 @@ public class TimeWindow {
 	Bomb bomb;
 	
 	public TimeWindow(Stage stage) {
-		stagee = stage;
-		//stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
 		Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 		Gdx.input.setInputProcessor(stage);
 		Button close = new TextButton("OK", skin);

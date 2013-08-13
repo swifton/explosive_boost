@@ -18,10 +18,7 @@ public class Levels {
 	Level level13 = new Level();
 	Level level14 = new Level();
 	Level level15 = new Level();
-	Level level16 = new Level();
-	Level level17 = new Level();
-	Level level18 = new Level();
-	Level level19 = new Level();
+	Level [] list = new Level[]{level1, level2, level3, level4, level5, level6, level7, level8, level9, level10, level11, level12, level13, level14, level15};
 	
 
 	public Levels() {
@@ -31,7 +28,7 @@ public class Levels {
 		level1.detector = new DetCoord(43, 1, 0);
 		
 		level2.walls = new int[][]{{1, 1, 1, 30}, {1, 1, 43, 1}, {1, 30, 15, 30}, {28, 30, 43, 30}, {43, 0, 43, 30}};
-		level2.bombs = new int[][]{{22, 3, 0, 70}};
+		level2.bombs = new int[][]{{22, 3, 0, 80}};
 		level2.ball = new Vector2(4.3f, 5f);
 		level2.detector = new DetCoord(15, 30, 1);		
 		

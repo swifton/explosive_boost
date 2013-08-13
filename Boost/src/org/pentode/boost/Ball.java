@@ -39,6 +39,8 @@ public class Ball {
 		fixtureDef = new FixtureDef();
 		
 		body  = world.createBody(ballDef);
+		body.setUserData("ball");
+
 		
 		fixtureDef.shape = circle;
 		fixtureDef.density = 0.5f; 
