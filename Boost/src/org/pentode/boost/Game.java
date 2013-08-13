@@ -75,6 +75,7 @@ public class Game {
 		loadLevelCoordinates(levels.list[levelNum - 1]);
 		createBodies();
 		detector = new Detector(detX, detY, detDir, ball.body, textures.detT);
+		resetLevel();
 	}
 	
 	private void loadLevelCoordinates(Level level) {
@@ -308,13 +309,14 @@ public class Game {
 		   playButton.setText("Play");
 		   play = !play;
 		   resetLevel();
+		   detector.on = true;
+
 		   if(play) {
 			   timeWindow.window.setVisible(false);
 			   playButton.setText("Stop");
 			   for (int k = 0; k < bombs.length; k++) {
 				   bombs[k].countdownTime = (int) Math.floor(((float)bombs[k].seconds + (float)bombs[k].centiSeconds/100)*60);
 				   timeToWin = -1;
-				   detector.on = true;
 			   }
 		   }
 		   

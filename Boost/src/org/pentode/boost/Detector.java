@@ -20,7 +20,6 @@ public class Detector {
 	Sprite sprite;
 	static final float BOX_TO_WORLD = 200f;
 	boolean on = true;
-
 	
 	public Detector(int x, int y, int d, Body tD, Texture texture) {
 		toDetect = tD;
@@ -35,19 +34,19 @@ public class Detector {
 	    sprite = new Sprite(texture, 0, 0, 64, 64);
 	    sprite.setSize(40, 40);
 	    sprite.setPosition(p1.x * BOX_TO_WORLD - 20, p1.y * BOX_TO_WORLD - 20);
-	    //sprite.setRotation(90 - d * 90);
 		
 		callBack = new RayCastCallback() {
 			   @Override
 			   public float reportRayFixture(Fixture fix, Vector2 p, Vector2 normal, float fraction) {
-				   fuckJava(p, fix.getBody());
+				   changep2(p, fix.getBody());
 				   return -1f;
 			   }
 		};
 	}
 	
 	 
-	private void fuckJava(Vector2 p, Body body) {
+	private void changep2(Vector2 p, Body body) {
+
 		if ((Math.abs(p.x - p1.x) < Math.abs(p2.x - p1.x)) || (Math.abs(p.y - p1.y) < Math.abs(p2.y - p1.y))) {
 			p2.x = p.x;
 			p2.y = p.y;
@@ -67,6 +66,7 @@ public class Detector {
   	  	return false;
 	}
 	public void draw(SpriteBatch batch, ShapeRenderer renderer) {
+
 		renderer.begin(ShapeType.Line);
 	    renderer.setColor(Color.RED);
 	    renderer.line(p1.x * BOX_TO_WORLD, p1.y * BOX_TO_WORLD, p2.x * BOX_TO_WORLD, p2.y * BOX_TO_WORLD);
