@@ -17,10 +17,13 @@ public class Brick {
 	Sprite sprite;
 	int vertical;
 	int x1, x2, y1, y2;
-	static final float BOX_TO_WORLD = 200f;
-
+	static float BOX_TO_WORLD;
+	static float cellSize;
 	
-	public Brick(int x11, int y11, int x22, int y22, World world) {
+	public Brick(int x11, int y11, int x22, int y22, World world, float BTW) {
+		BOX_TO_WORLD = BTW;
+		cellSize = BTW / 5;
+		
 		x1 = x11;
 		x2 = x22;
 		y1 = y11;
@@ -66,7 +69,7 @@ public class Brick {
 	}
 	
 	public void draw(SpriteBatch batch) {
-		sprite.setPosition(body.getPosition().x * BOX_TO_WORLD - 40, body.getPosition().y * BOX_TO_WORLD - 20);
+		sprite.setPosition(body.getPosition().x * BOX_TO_WORLD - cellSize, body.getPosition().y * BOX_TO_WORLD - cellSize/2);
   	  	sprite.setRotation((float) (body.getAngle() * 180 / Math.PI + vertical * 90));
 	    batch.begin();
 	    sprite.draw(batch);

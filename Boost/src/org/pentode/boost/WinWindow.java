@@ -23,19 +23,26 @@ public class WinWindow {
 		Label win = new Label("Level complete!", skin);
 		Label crap = new Label("", skin);
 		
+		int wC = 200;
+		int hC = 100;
+		int wW = 3 * wC;
+		int hW = 2 * hC;
+		int wS = Gdx.graphics.getWidth();
+		int hS = Gdx.graphics.getHeight();
+		
 		window = new Window("", skin);
-		window.setPosition(400, 400);
 		window.defaults().spaceBottom(0);
 		window.row();
-		window.add(crap).minWidth(200).minHeight(100).bottom();
-		window.add(win).minWidth(200).minHeight(100).bottom();
+		window.add(crap).minWidth(wC).minHeight(hC).bottom();
+		window.add(win).minWidth(wC).minHeight(hC).bottom();
 		window.row();
-		window.add(next).minWidth(200).minHeight(100).bottom();
-		window.add(replay).minWidth(200).minHeight(100).bottom();
-		window.add(select).minWidth(200).minHeight(100).bottom();
+		window.add(next).minWidth(wC).minHeight(hC).bottom();
+		window.add(replay).minWidth(wC).minHeight(hC).bottom();
+		window.add(select).minWidth(wC).minHeight(hC).bottom();
 		window.setVisible(false);
-		window.setHeight(200);
-		window.setWidth(600);
+		window.setWidth(wW);
+		window.setHeight(hW);
+		window.setPosition((wS - wW) / 2, (hS - hW) / 2);
 		
 		stage.addActor(window);
 		

@@ -16,7 +16,7 @@ public class MyAppACRA extends Application {
         super.onCreate();
 
         // The following line triggers the initialization of ACRA
-        ACRA.init(this);
+        //ACRA.init(this);
         
         //BugSenseHandler.initAndStartSession(MyAppACRA.this, "a0191cc8");
     }

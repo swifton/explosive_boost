@@ -45,20 +45,28 @@ public class TimeWindow {
 		SplitPane plus = new SplitPane(plusSec, plusCen, false, skin, "default-horizontal");
 		SplitPane minus = new SplitPane(minusSec, minusCen, false, skin, "default-horizontal");
 		
+		int wPM = 600;
+		int hPM = 100;
+		int wW = 820;
+		int hW = 550;
+		int wS = Gdx.graphics.getWidth();
+		int hS = Gdx.graphics.getHeight();
+		
 		window = new Window("", skin);
-		window.setPosition(400, 400);
+		
 		window.defaults().spaceBottom(0);
 		window.row();
-		window.add(plus).minWidth(600).minHeight(100).bottom();
+		window.add(plus).minWidth(wPM).minHeight(hPM).bottom();
 		window.row();
 		window.add(time);
 		window.add(close).minWidth(200).minHeight(320);
 		window.row();
-		window.add(minus).minWidth(600).minHeight(100).top();
-		window.setSize(820, 550);
+		window.add(minus).minWidth(wPM).minHeight(hPM).top();
+		window.setSize(wW, hW);
 		window.setMovable(false);
 		stage.addActor(window);
 		window.setVisible(false);
+		window.setPosition((wS - wW) / 2, (hS - hW) / 2);
 		
 		close.addListener(new ClickListener() {
 		    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {

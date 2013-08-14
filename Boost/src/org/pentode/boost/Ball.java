@@ -12,13 +12,19 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.World;
 
 public class Ball {
-	static final float BOX_TO_WORLD = 200f;
+	static float BOX_TO_WORLD;
+	static float cellSize;
 	Sprite sprite;
 	Body body;
 	Vector2 initialPos;
 	
-	public Ball(World world, Vector2 ballInitialPosition, Texture texture) {
+	public Ball(World world, Vector2 ballInitialPosition, Texture texture, float BTW) {
+		BOX_TO_WORLD = BTW;
+		cellSize = BTW / 5;
+		
 		sprite = new Sprite(texture, 0, 0, 80, 80);
+	    sprite.setSize(cellSize * 2, cellSize * 2);
+
 		initialPos = new Vector2(ballInitialPosition.x, ballInitialPosition.y);
 		 
 		createBody(world);
@@ -59,7 +65,7 @@ public class Ball {
 	}
 	 
 	public void draw(SpriteBatch batch) {
-		sprite.setPosition(body.getPosition().x * BOX_TO_WORLD - 40, body.getPosition().y * BOX_TO_WORLD - 40);
+		sprite.setPosition(body.getPosition().x * BOX_TO_WORLD - cellSize, body.getPosition().y * BOX_TO_WORLD - cellSize);
 	    sprite.setRotation((float) (body.getAngle() * 180 / Math.PI));
 	    batch.begin();
 	    sprite.draw(batch);

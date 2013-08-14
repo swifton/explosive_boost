@@ -1,8 +1,11 @@
 package org.pentode.boost;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -22,6 +25,10 @@ public class Game {
 	WinWindow winWindow;
 	private boolean visible = false;
 	
+	float BTW;
+	float cellSize;
+	float buttonSize;
+	
 	World world = new World(new Vector2(0, -10), true);
 	
 	int [][] coordB;
@@ -34,6 +41,8 @@ public class Game {
 	Bomb [] bombs;
 	Brick [] bricks;
 	Wall [] walls;
+	
+	BitmapFont font;
 
 	Levels levels = new Levels();
 	
@@ -71,10 +80,18 @@ public class Game {
 		createSelectButton(stage);
 	}
 	
+	public void createDigits() {
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("TickingTimebombBB.ttf"));
+	    font = generator.generateFont(generator.scaleForPixelHeight((int) (cellSize * 1.4)));
+	    font.setColor(Color.RED);
+	    font.setFixedWidthGlyphs("0123456789");
+	    generator.dispose();
+	}
+	
 	public void loadLevel() {
 		loadLevelCoordinates(levels.list[levelNum - 1]);
 		createBodies();
-		detector = new Detector(detX, detY, detDir, ball.body, textures.detT);
+		detector = new Detector(detX, detY, detDir, ball.body, textures.detT, BTW);
 		resetLevel();
 	}
 	
@@ -122,7 +139,7 @@ public class Game {
 		}
 	   
 	   private void createBodies() {
-		   ball = new Ball(world, ballInitialPosition, textures.ballT);
+		   ball = new Ball(world, ballInitialPosition, textures.ballT, BTW);
 		   
 		// Walls		   		 
 	       int angle;
@@ -132,7 +149,7 @@ public class Game {
 		   for (int i = 0; i < coord.length; i++) {
 			   if (coord[i].length == 5) angle = coord[i][4];
 			   else angle = 0;
-			   wall = new Wall(coord[i][0], coord[i][1], coord[i][2], coord[i][3], angle, world);
+			   wall = new Wall(coord[i][0], coord[i][1], coord[i][2], coord[i][3], angle, world, BTW);
 			   wall.createSprites(coord[i][0], coord[i][1], coord[i][2], coord[i][3], angle, textures.metal);
 			   walls[i] = wall;
 		   }
@@ -142,11 +159,11 @@ public class Game {
 		   Bomb bomb;
 		   
 		   for (int i = 0; i < coordB.length; i++) {
-			   bomb = new Bomb(coordB[i][0], coordB[i][1], world, stage, timeWindow, coordB[i][2], coordB[i][3], batch);
+			   bomb = new Bomb(coordB[i][0], coordB[i][1], world, stage, timeWindow, coordB[i][2], coordB[i][3], batch, BTW, font);
 			   bombs[i] = bomb;
 			   bomb.crate = new Sprite(textures.crateT, 28, 26, 443, 444);
-			   bomb.crate.setSize(120, 120);
-			   bomb.crate.setOrigin(60, 60);
+			   bomb.crate.setSize(cellSize * 3, cellSize * 3);
+			   bomb.crate.setOrigin(cellSize * 3/2, cellSize * 3/2);
 			   bomb.sound = sounds.explosionSound;
 		   }
 		   
@@ -157,10 +174,10 @@ public class Game {
 		   
 		   if (coordBr != null) {
 			   for (int i = 0; i < coordBr.length; i++) {
-				   brick = new Brick(coordBr[i][0], coordBr[i][1], coordBr[i][2], coordBr[i][3], world);
+				   brick = new Brick(coordBr[i][0], coordBr[i][1], coordBr[i][2], coordBr[i][3], world, BTW);
 				   brick.sprite = new Sprite(textures.brickT, 0, 62, 64, 32);
-				   brick.sprite.setSize(80, 40);
-				   brick.sprite.setOrigin(40, 20);
+				   brick.sprite.setSize(cellSize * 2, cellSize);
+				   brick.sprite.setOrigin(cellSize, cellSize / 2);
 				   bricks[i] = brick;
 			   }
 		   }
@@ -269,10 +286,7 @@ public class Game {
 	   private void createPlayButton(Stage stage) {
 		   Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 		   playButton = new TextButton("Play", skin);
-		   playButton.setX(1785f);
-		   playButton.setY(1070f);
-		   playButton.setWidth(130f);
-		   playButton.setHeight(130f);
+		   
 		   playButton.setVisible(visible);
 	       stage.addActor(playButton);
 	        
@@ -288,10 +302,7 @@ public class Game {
 	   private void createSelectButton(Stage stage) {
 		   Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 		   selectButton = new TextButton("Select level", skin);
-		   selectButton.setX(1785f);
-		   selectButton.setY(930f);
-		   selectButton.setWidth(130f);
-		   selectButton.setHeight(130f);
+		   
 		   selectButton.setVisible(visible);
 	       stage.addActor(selectButton);
 	        
@@ -303,6 +314,22 @@ public class Game {
 	        	}
 	        		
 			});
+	   }
+	   
+	   public void resizeButtons() {
+		   float w = Gdx.graphics.getWidth();
+		   float h = Gdx.graphics.getHeight();
+		   float size = buttonSize;
+		   
+		   selectButton.setX(w - size);
+		   selectButton.setY(h - 2 * size - 5);
+		   selectButton.setWidth(size);
+		   selectButton.setHeight(size);
+		   
+		   playButton.setX(w - size);
+		   playButton.setY(h - size - 5);
+		   playButton.setWidth(size);
+		   playButton.setHeight(size);
 	   }
 	   
 	   public void pausePlay() {

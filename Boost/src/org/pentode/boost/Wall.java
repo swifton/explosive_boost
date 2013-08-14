@@ -14,8 +14,14 @@ public class Wall {
 	float [] angles;
 	Sprite[] sprites;
 	int x1, x2, y1, y2, angle;
+	
+	static float BOX_TO_WORLD;
+	static float cellSize;
 
-	public Wall (int x11, int y11, int x22, int y22, int a, World world) {
+	public Wall (int x11, int y11, int x22, int y22, int a, World world, float BTW) {
+		BOX_TO_WORLD = BTW;
+		cellSize = BTW / 5;
+		
 		x1 = x11;
 		x2 = x22;
 		y1 = y11;
@@ -48,27 +54,27 @@ public class Wall {
 		int k;
 
 		if (x1 == x2) {
-			int s = (int) Math.floor((y2 - y1 + 1) * 40/123);
+			int s = (int) Math.floor((y2 - y1 + 1) * cellSize/123);
 			sprites = new Sprite[s + 1];
 			for (k = 0; k < s; k++) {
-				createOneSprite(40, 123, x1 * 40 - 40, y1 * 40 - 40 + 123 * k, k, metal, 0, 0, 0);
+				createOneSprite(cellSize, 123, x1 * cellSize - cellSize, y1 * cellSize - cellSize + 123 * k, k, metal, 0, 0, 0);
 			}
-			createOneSprite(40, (y2 - y1 + 1) * 40 - k * 123, x1 * 40 - 40, y1 * 40 - 40 + 123 * k, k, metal, 0, 0, 0);
+			createOneSprite(cellSize, (y2 - y1 + 1) * cellSize - k * 123, x1 * cellSize - cellSize, y1 * cellSize - cellSize + 123 * k, k, metal, 0, 0, 0);
 		}
 		   
 		if (y1 == y2) {
-			int s = (int) Math.floor((x2 - x1 + 1) * 40/103);
+			int s = (int) Math.floor((x2 - x1 + 1) * cellSize/103);
 			sprites = new Sprite[s + 1];
 			for (k = 0; k < s; k++) {
-				createOneSprite(103, 40, x1 * 40 - 40 + 103 * k, y1 * 40 - 40, k, metal, (x2 + x1 - 1) * 20 - (x1 - 1) * 40 - k * 103, 20, angle);
+				createOneSprite(103, cellSize, x1 * cellSize - cellSize + 103 * k, y1 * cellSize - cellSize, k, metal, (x2 + x1 - 1) * 20 - (x1 - 1) * cellSize - k * 103, 20, angle);
 			}
-			createOneSprite((x2 - x1 + 1) * 40 - k * 103, 40, x1 * 40 - 40 + 103 * k, y1 * 40 - 40, k, metal, (x2 + x1 - 1) * 20 - (x1 - 1) * 40 - k * 103, 20, angle);
+			createOneSprite((x2 - x1 + 1) * cellSize - k * 103, cellSize, x1 * cellSize - cellSize + 103 * k, y1 * cellSize - cellSize, k, metal, (x2 + x1 - 1) * 20 - (x1 - 1) * cellSize - k * 103, 20, angle);
 		}
 	}
 	
-	private void createOneSprite(int wid, int hei, int posX, int posY, int k, Texture metal, int orX, int orY, int angle) { 
+	private void createOneSprite(float wid, float hei, float posX, float posY, int k, Texture metal, float orX, float orY, int angle) { 
 		Sprite sprite;
-		sprite = new Sprite(metal, 0, 0, wid, hei);
+		sprite = new Sprite(metal, 0, 0, (int) wid, (int) hei);
 		sprite.setPosition(posX, posY);
 		sprite.setOrigin(orX, orY);
 		sprite.setRotation((float) (angles[angle] * 180 / Math.PI));

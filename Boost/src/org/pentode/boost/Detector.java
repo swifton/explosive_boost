@@ -18,10 +18,15 @@ public class Detector {
 	Body lastBody;
 	Vector2 p1, p2, p3;
 	Sprite sprite;
-	static final float BOX_TO_WORLD = 200f;
+	static float BOX_TO_WORLD;
+	static float cellSize;
+
 	boolean on = true;
 	
-	public Detector(int x, int y, int d, Body tD, Texture texture) {
+	public Detector(int x, int y, int d, Body tD, Texture texture, float BTW) {
+		BOX_TO_WORLD = BTW;
+		cellSize = BTW / 5;
+		
 		toDetect = tD;
 		
 		p1 = new Vector2((float) x / 5 - 0.1f, (float) y / 5 - 0.1f);
@@ -32,8 +37,8 @@ public class Detector {
 		p2 = new Vector2(p3.x, p3.y);
 		
 	    sprite = new Sprite(texture, 0, 0, 64, 64);
-	    sprite.setSize(40, 40);
-	    sprite.setPosition(p1.x * BOX_TO_WORLD - 20, p1.y * BOX_TO_WORLD - 20);
+	    sprite.setSize(cellSize, cellSize);
+	    sprite.setPosition(p1.x * BOX_TO_WORLD - cellSize/2, p1.y * BOX_TO_WORLD - cellSize/2);
 		
 		callBack = new RayCastCallback() {
 			   @Override

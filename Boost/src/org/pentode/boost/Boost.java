@@ -14,7 +14,7 @@ public class Boost implements ApplicationListener {
 	   public Stage stage;
 	   boolean postponedReset = false;
 	   
-	   static final float BOX_TO_WORLD = 200f;
+	   static float BOX_TO_WORLD;
 	   Box2DDebugRenderer debugRenderer;
 	   Matrix4 debugMatrix;
 
@@ -37,8 +37,6 @@ public class Boost implements ApplicationListener {
 		   
 		   debugRenderer = new Box2DDebugRenderer();
 
-		   debugMatrix = new Matrix4(camera.combined);
-		   debugMatrix.scale(BOX_TO_WORLD, BOX_TO_WORLD, 1f);
 	   }	  
 
 	   @Override
@@ -48,17 +46,20 @@ public class Boost implements ApplicationListener {
 		   Gdx.gl.glClearColor(0, 0, 0.2f, 1);
 		   Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		   Gdx.gl.glEnable(GL10.GL_DEPTH_TEST);
+		   camera.apply(Gdx.gl10);
+
 	      
 		   camera.update();
 		   batch.setProjectionMatrix(camera.combined);
-		   camera.apply(Gdx.gl10);
+		   
 		   game.renderer.setProjectionMatrix(camera.combined);
+		   
+		   //debugRenderer.render(game.world, debugMatrix);
 		   
 		   game.render();
 
-		   stage.draw();
-		   debugRenderer.render(game.world, debugMatrix);
-	    	  
+		   stage.draw();		   
+	    	
 		   Gdx.gl.glDisable(GL10.GL_DEPTH_TEST);
 	   }
 	   
@@ -113,7 +114,22 @@ public class Boost implements ApplicationListener {
 	   public void resize(int width, int height) {
 		   float w = Gdx.graphics.getWidth();
 		   float h = Gdx.graphics.getHeight();
+		   if (h/w > 30/45) System.out.println("WTF?!");
+		   
+		   BOX_TO_WORLD = h/6 - 1;
+		   game.BTW = BOX_TO_WORLD; 
+		   game.cellSize = game.BTW / 5;
+		   game.buttonSize = w - game.cellSize * 43;
+		   if (game.buttonSize < 80) game.buttonSize = 80;
+		   game.resizeButtons();
+		   game.createDigits();
+
+		   System.out.println(w);
+		   System.out.println(h);
 		   camera.setToOrtho(false, w, h);
+		   
+		   debugMatrix = new Matrix4(camera.combined);
+		   debugMatrix.scale(BOX_TO_WORLD, BOX_TO_WORLD, 1f);
 	   }
 
 	   @Override

@@ -41,7 +41,8 @@ public class Bomb {
 	boolean touched;
 	boolean play = false;
 	TimeWindow timeWindow;
-	static final float BTWORLD = 200f;
+	static float BTWORLD;
+	static float cellSize;
 	boolean droppable = true;
 	QueryCallback AABBCallback;
 	World world;
@@ -50,7 +51,9 @@ public class Bomb {
 	RotatableText time;
 	Sound sound;
 	
-	public Bomb(int x, int y, World wrld, Stage stage, TimeWindow w, int sec, int cen, SpriteBatch batch) {
+	public Bomb(int x, int y, World wrld, Stage stage, TimeWindow w, int sec, int cen, SpriteBatch batch, float BTW, BitmapFont font) {
+		BTWORLD = BTW;
+		cellSize = BTW / 5;
 		seconds = sec;
 		centiSeconds = cen;
 		world = wrld;
@@ -65,7 +68,7 @@ public class Bomb {
 		//stage.addActor(label);
 		resetCurrentTime();
 		updateLabel();
-		time = new RotatableText("00:00", batch);
+		time = new RotatableText("00:00", batch, cellSize, font);		
 	}
 	  
 	public void createBody(World wrld) {
@@ -212,7 +215,7 @@ public class Bomb {
 	  
 	public void draw(SpriteBatch batch) {
 		if (body == null) return;
-		crate.setPosition(body.getPosition().x * BTWORLD - 60, body.getPosition().y * BTWORLD - 60);
+		crate.setPosition(body.getPosition().x * BTWORLD - cellSize * 3/2, body.getPosition().y * BTWORLD - cellSize * 3/2);
 	    crate.setRotation((float) (body.getAngle() * 180 / Math.PI));
 	    batch.begin();
 	    crate.draw(batch);
@@ -242,8 +245,8 @@ public class Bomb {
 	public void drawLabel() {
 		time.text =  time();
 		
-		double r = 27 * Math.sqrt(5);
-		double alpha = body.getAngle() + Math.PI * 9 / 10;
+		double r = 26.3f * Math.sqrt(5) * (cellSize / 40);
+		double alpha = body.getAngle() + Math.PI * 10 / 11;
 		float dx = (float) (r * Math.cos(alpha));
 		float dy = (float) (r * Math.sin(alpha));
 		time.draw(body.getPosition().x * BTWORLD + dx, body.getPosition().y * BTWORLD + dy, (float) (body.getAngle() * 180 / Math.PI));
