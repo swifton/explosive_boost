@@ -40,6 +40,7 @@ public class WinWindow {
 		window.add(replay).minWidth(wC).minHeight(hC).bottom();
 		window.add(select).minWidth(wC).minHeight(hC).bottom();
 		window.setVisible(false);
+		window.setMovable(false);
 		window.setWidth(wW);
 		window.setHeight(hW);
 		window.setPosition((wS - wW) / 2, (hS - hW) / 2);

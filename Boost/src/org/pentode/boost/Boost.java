@@ -107,7 +107,9 @@ public class Boost implements ApplicationListener {
    
 	   @Override
 	   public void dispose() {
-
+		   game.font.dispose();
+		   game.sounds.dispose();
+		   game.textures.dispose();
 	   }
 
 	   @Override

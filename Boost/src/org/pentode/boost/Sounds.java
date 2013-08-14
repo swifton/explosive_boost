@@ -15,4 +15,11 @@ public class Sounds {
 		   detectorSound= Gdx.audio.newSound(Gdx.files.internal("detector.wav"));
 		   brickSound= Gdx.audio.newSound(Gdx.files.internal("brick.wav"));
 	}
+	
+	public void dispose() {
+		explosionSound.dispose();
+		ballSound.dispose();
+		detectorSound.dispose();
+		brickSound.dispose();
+	}
 }

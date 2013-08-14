@@ -17,5 +17,12 @@ public class Textures {
 		ballT = new Texture(Gdx.files.internal("ball.png"));
 		detT = new Texture(Gdx.files.internal("detector.png"));
 	}
-
+	
+	public void dispose() {
+		crateT.dispose();
+		brickT.dispose();
+		metal.dispose();
+		ballT.dispose();
+		detT.dispose();
+	}
 }

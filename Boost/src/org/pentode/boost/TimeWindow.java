@@ -24,7 +24,7 @@ public class TimeWindow {
 	
 	public TimeWindow(Stage stage) {
 		Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-		Gdx.input.setInputProcessor(stage);
+		
 		Button close = new TextButton("OK", skin);
 		Button plusSec = new TextButton("+", skin);
 		Button minusSec = new TextButton("-", skin);

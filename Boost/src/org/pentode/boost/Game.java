@@ -23,6 +23,7 @@ import com.badlogic.gdx.utils.Array;
 public class Game {
 	TimeWindow timeWindow;
 	WinWindow winWindow;
+	HelpWindow helpWindow;
 	private boolean visible = false;
 	
 	float BTW;
@@ -59,6 +60,7 @@ public class Game {
 	boolean play = false;
 	TextButton playButton;
 	TextButton selectButton;
+	TextButton helpButton;
 	int timeToWin = -1;
 	
 	int levelNum = 1;
@@ -75,9 +77,12 @@ public class Game {
 		
 		timeWindow = new TimeWindow(stage);
 		winWindow = new WinWindow(stage);
+		helpWindow = new HelpWindow(stage);
+		
 		createContactListener();
 		createPlayButton(stage);
 		createSelectButton(stage);
+		createHelpButton(stage);
 	}
 	
 	public void createDigits() {
@@ -205,8 +210,13 @@ public class Game {
 		   visible = v;
 		   playButton.setVisible(v);
 		   selectButton.setVisible(v);
+		   helpButton.setVisible(v);
 		   
-		   if (!v) timeWindow.window.setVisible(false);
+		   if (!v) {
+			   timeWindow.window.setVisible(false);
+			   helpWindow.window.setVisible(false);
+			   winWindow.window.setVisible(false);
+		   }
 	   }
 	   
 	   public void render() {
@@ -316,20 +326,43 @@ public class Game {
 			});
 	   }
 	   
+	   private void createHelpButton(Stage stage) {
+		   Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+		   helpButton = new TextButton("Help", skin);
+		   
+		   helpButton.setVisible(visible);
+	       stage.addActor(helpButton);
+	        
+	       helpButton.addListener(new ChangeListener() {
+	        	@Override
+				public void changed (ChangeEvent event, Actor actor) {
+	        		if (!play){
+	        			helpWindow.window.setVisible(true);
+	        		}
+	        	}
+	        		
+			});
+	   }
+	   
 	   public void resizeButtons() {
 		   float w = Gdx.graphics.getWidth();
 		   float h = Gdx.graphics.getHeight();
 		   float size = buttonSize;
+		   
+		   playButton.setX(w - size);
+		   playButton.setY(h - size - 5);
+		   playButton.setWidth(size);
+		   playButton.setHeight(size);
 		   
 		   selectButton.setX(w - size);
 		   selectButton.setY(h - 2 * size - 5);
 		   selectButton.setWidth(size);
 		   selectButton.setHeight(size);
 		   
-		   playButton.setX(w - size);
-		   playButton.setY(h - size - 5);
-		   playButton.setWidth(size);
-		   playButton.setHeight(size);
+		   helpButton.setX(w - size);
+		   helpButton.setY(h - 3 * size - 5);
+		   helpButton.setWidth(size);
+		   helpButton.setHeight(size);
 	   }
 	   
 	   public void pausePlay() {
@@ -340,6 +373,7 @@ public class Game {
 
 		   if(play) {
 			   timeWindow.window.setVisible(false);
+			   helpWindow.window.setVisible(false);
 			   playButton.setText("Stop");
 			   for (int k = 0; k < bombs.length; k++) {
 				   bombs[k].countdownTime = (int) Math.floor(((float)bombs[k].seconds + (float)bombs[k].centiSeconds/100)*60);
