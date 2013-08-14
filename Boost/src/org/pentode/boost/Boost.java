@@ -21,6 +21,7 @@ public class Boost implements ApplicationListener {
 	   SpriteBatch batch;
 	   
 	   LevelSelect levelSelect;
+	   StartScreen startScreen;
 	   
 	   Game game;
 
@@ -34,9 +35,11 @@ public class Boost implements ApplicationListener {
 		   
 		   game = new Game(stage, batch);
 		   levelSelect = new LevelSelect(stage);
+		   startScreen = new StartScreen(stage);
 		   
 		   debugRenderer = new Box2DDebugRenderer();
 
+		   levelSelect.container.setVisible(false);
 	   }	  
 
 	   @Override
@@ -64,6 +67,11 @@ public class Boost implements ApplicationListener {
 	   }
 	   
 	   private void listenLevels() {
+		   if (startScreen.message == "start") {
+			   game.waiting = true;
+			   startScreen.message  = "";
+		   }
+		   
 		   if (levelSelect.levelNum != -1) {
 			   game.levelNum = levelSelect.levelNum;
 			   levelSelect.levelNum = -1;
@@ -103,6 +111,7 @@ public class Boost implements ApplicationListener {
 			   game.complete = false;
 			   game.timeToWin = -1;
 		   }
+		   
 	   }
    
 	   @Override

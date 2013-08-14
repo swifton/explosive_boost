@@ -64,7 +64,7 @@ public class Game {
 	int timeToWin = -1;
 	
 	int levelNum = 1;
-	boolean waiting = true;
+	boolean waiting = false;
 	boolean complete = false;
 	
 	Stage stage; 
