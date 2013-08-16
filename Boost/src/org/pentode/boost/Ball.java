@@ -24,6 +24,7 @@ public class Ball {
 		
 		sprite = new Sprite(texture, 0, 0, 80, 80);
 	    sprite.setSize(cellSize * 2, cellSize * 2);
+	    sprite.setOrigin(cellSize, cellSize);
 
 		initialPos = new Vector2(ballInitialPosition.x, ballInitialPosition.y);
 		 

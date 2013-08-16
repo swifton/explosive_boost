@@ -18,10 +18,11 @@ public class Explosion {
 	Body [] bullets = new Body[numRays];
 	int cleanupDelay = 25;
 	PooledEffect [] particles = new PooledEffect[numRays];
-	static final float BOX_TO_WORLD = 200f;
+	float BOX_TO_WORLD;
 
 
-	public Explosion(float blastPower, Vector2 center, World world) {
+	public Explosion(float blastPower, Vector2 center, World world, float BTW) {
+		BOX_TO_WORLD = BTW;
 	
 		float DEGTORAD = (float)Math.PI/180;
 		   

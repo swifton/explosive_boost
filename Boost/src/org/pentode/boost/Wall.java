@@ -66,9 +66,9 @@ public class Wall {
 			int s = (int) Math.floor((x2 - x1 + 1) * cellSize/103);
 			sprites = new Sprite[s + 1];
 			for (k = 0; k < s; k++) {
-				createOneSprite(103, cellSize, x1 * cellSize - cellSize + 103 * k, y1 * cellSize - cellSize, k, metal, (x2 + x1 - 1) * 20 - (x1 - 1) * cellSize - k * 103, 20, angle);
+				createOneSprite(103, cellSize, x1 * cellSize - cellSize + 103 * k, y1 * cellSize - cellSize, k, metal, (x2 + x1 - 1) * cellSize/2 - (x1 - 1) * cellSize - k * 103, cellSize/2, angle);
 			}
-			createOneSprite((x2 - x1 + 1) * cellSize - k * 103, cellSize, x1 * cellSize - cellSize + 103 * k, y1 * cellSize - cellSize, k, metal, (x2 + x1 - 1) * 20 - (x1 - 1) * cellSize - k * 103, 20, angle);
+			createOneSprite((x2 - x1 + 1) * cellSize - k * 103, cellSize, x1 * cellSize - cellSize + 103 * k, y1 * cellSize - cellSize, k, metal, (x2 + x1 - 1) * cellSize/2 - (x1 - 1) * cellSize - k * 103, cellSize/2, angle);
 		}
 	}
 	

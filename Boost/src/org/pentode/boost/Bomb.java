@@ -225,7 +225,7 @@ public class Bomb {
 	  
 	public void countDown(Array<Explosion> explosions) {
 		if (countdownTime == 0) {
-    		Explosion explosion = new Explosion(23, body.getPosition(), world);
+    		Explosion explosion = new Explosion(23, body.getPosition(), world, BTWORLD);
     		explosions.add(explosion);
     		world.destroyBody(body);
     		sound.play();
