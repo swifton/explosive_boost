@@ -11,8 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class WinWindow {
-	Window window;
-	String message = "";
+	public Window window;
+	public String message = "";
 	
 	public WinWindow(Stage stage) {
 		Skin skin = new Skin(Gdx.files.internal("uiskin.json"));

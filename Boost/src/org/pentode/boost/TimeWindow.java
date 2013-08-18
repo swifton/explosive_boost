@@ -32,7 +32,9 @@ public class TimeWindow {
 		Button minusCen = new TextButton("-", skin);
 		
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("TickingTimebombBB.ttf"));
+		System.out.println("Xyu");
 	    BitmapFont font = generator.generateFont(273);
+	    System.out.println("Xyu");
 	    font.setColor(Color.RED);
 	    font.setFixedWidthGlyphs("0123456789");
 	    generator.dispose();

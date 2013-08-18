@@ -8,8 +8,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class Boost implements ApplicationListener {
 	   OrthographicCamera camera;
@@ -42,10 +40,6 @@ public class Boost implements ApplicationListener {
 		   debugRenderer = new Box2DDebugRenderer();
 
 		   levelSelect.container.setVisible(false);
-		   
-		   Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-		   Label label = new Label("Xyu", skin);
-		   stage.addActor(label);
 	   }	  
 
 	   @Override
@@ -54,6 +48,7 @@ public class Boost implements ApplicationListener {
 		   
 		   Gdx.gl.glClearColor(0, 0, 0.2f, 1);
 		   Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		   Gdx.gl.glClear(GL10.GL_DEPTH_BUFFER_BIT);
 		   Gdx.gl.glEnable(GL10.GL_DEPTH_TEST);
 		   camera.apply(Gdx.gl10);
 
@@ -69,7 +64,7 @@ public class Boost implements ApplicationListener {
 
 		   stage.draw();		   
 	    	
-		   //Gdx.gl.glDisable(GL10.GL_DEPTH_TEST);
+		   Gdx.gl.glDisable(GL10.GL_DEPTH_TEST);
 	   }
 	   
 	   private void listenLevels() {
