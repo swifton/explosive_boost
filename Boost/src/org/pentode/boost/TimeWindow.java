@@ -31,10 +31,26 @@ public class TimeWindow {
 		Button plusCen = new TextButton("+", skin);
 		Button minusCen = new TextButton("-", skin);
 		
+		int wPM = 600;
+		int hPM = 100;
+		int wW = 820;
+		int hW = 550;
+		int hL = 320;
+		int wS = Gdx.graphics.getWidth();
+		int hS = Gdx.graphics.getHeight();
+		
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("TickingTimebombBB.ttf"));
-		System.out.println("Xyu");
-	    BitmapFont font = generator.generateFont(273);
-	    System.out.println("Xyu");
+		int size = 273;
+		if (Gdx.graphics.getDensity() < 3/2) {
+			size = 180;
+			wPM = 400;
+			wW = 620;
+			hW = 430;
+			hL = 200;
+		}
+
+	    BitmapFont font = generator.generateFont(size, "0123456789:", false);
+	    
 	    font.setColor(Color.RED);
 	    font.setFixedWidthGlyphs("0123456789");
 	    generator.dispose();
@@ -46,14 +62,7 @@ public class TimeWindow {
 		
 		SplitPane plus = new SplitPane(plusSec, plusCen, false, skin, "default-horizontal");
 		SplitPane minus = new SplitPane(minusSec, minusCen, false, skin, "default-horizontal");
-		
-		int wPM = 600;
-		int hPM = 100;
-		int wW = 820;
-		int hW = 550;
-		int wS = Gdx.graphics.getWidth();
-		int hS = Gdx.graphics.getHeight();
-		
+
 		window = new Window("", skin);
 		
 		window.defaults().spaceBottom(0);
@@ -61,7 +70,7 @@ public class TimeWindow {
 		window.add(plus).minWidth(wPM).minHeight(hPM).bottom();
 		window.row();
 		window.add(time);
-		window.add(close).minWidth(200).minHeight(320);
+		window.add(close).minWidth(200).minHeight(hL);
 		window.row();
 		window.add(minus).minWidth(wPM).minHeight(hPM).top();
 		window.setSize(wW, hW);

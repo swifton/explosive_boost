@@ -32,9 +32,9 @@ public class Levels {
 		level2.ball = new Vector2(4.3f, 5f);
 		level2.detector = new DetCoord(15, 30, 1);		
 		
-		level3.walls = new int[][]{{1, 1, 1, 30}, {1, 1, 43, 1}, {1, 30, 43, 30}, {43, 1, 43, 10}};
+		level3.walls = new int[][]{{1, 1, 1, 30}, {1, 1, 43, 1}, {1, 30, 43, 30}, {43, 1, 43, 20}};
 		level3.bombs = new int[][]{{24, 3, 2, 0}};
-		level3.ball = new Vector2(5f, 4f);
+		level3.ball = new Vector2(5f, 2f);
 		level3.detector = new DetCoord(43, 30, 2);
 		
 		level4.walls = new int[][]{{1, 1, 1, 30}, {1, 1, 43, 1}, {1, 30, 43, 30}, {43, 1, 43, 7}, {43, 15, 43, 30}, {25, 7, 43, 7}, {0, 7, 15, 7}, {-1, 10, 6, 10, 5}};
@@ -42,9 +42,9 @@ public class Levels {
 		level4.ball = new Vector2(0.4f, 2.4f);
 		level4.detector = new DetCoord(43, 15, 2);
 		
-		level5.walls = new int[][]{{1, 1, 1, 30}, {1, 1, 30, 1}, {1, 30, 43, 30}, {43, 1, 43, 30}, {1, 5, 15, 5}};
+		level5.walls = new int[][]{{1, 1, 1, 30}, {1, 1, 30, 1}, {1, 30, 43, 30}, {43, 1, 43, 30}, {5, 5, 10, 5}, {1, 4, 5, 4}};
 		level5.bombs = new int[][]{{35, 20, 2, 50}};
-		level5.ball = new Vector2(2f, 0.4f);
+		level5.ball = new Vector2(1f, 0.4f);
 		level5.detector = new DetCoord(43, 1, 3);
 		
 		level6.walls = new int[][]{{1, 1, 1, 30}, {1, 1, 43, 1}, {1, 30, 43, 30}, {43, 1, 43, 20}, {1, 15, 15, 15}};

@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -127,7 +128,6 @@ public class Boost implements ApplicationListener {
 	   public void resize(int width, int height) {
 		   float w = Gdx.graphics.getWidth();
 		   float h = Gdx.graphics.getHeight();
-		   if (h/w > 30/45) System.out.println("WTF?!");
 		   
 		   BOX_TO_WORLD = h/6 - 1;
 		   game.BTW = BOX_TO_WORLD; 
@@ -137,9 +137,10 @@ public class Boost implements ApplicationListener {
 		   if (3 * game.buttonSize > h) game.buttonSize = h/3;
 		   game.resizeButtons();
 		   game.createDigits();
+		   
+		   game.drag = new Sprite(game.textures.crateTarget, 28, 26, 443, 444);
+		   game.drag.setSize(game.cellSize * 3, game.cellSize * 3);
 
-		   System.out.println(w);
-		   System.out.println(h);
 		   camera.setToOrtho(false, w, h);
 		   
 		   debugMatrix = new Matrix4(camera.combined);

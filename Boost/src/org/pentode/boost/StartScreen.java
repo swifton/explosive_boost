@@ -23,13 +23,13 @@ public class StartScreen {
 		float h = Gdx.graphics.getHeight();
 		
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("TickingTimebombBB.ttf"));
-	    BitmapFont font = generator.generateFont(generator.scaleForPixelHeight((int)(h/7)));
+	    BitmapFont font = generator.generateFont(generator.scaleForPixelHeight((int)(h/7)), "explosivbt ", false);
 	    
 	    LabelStyle style = new LabelStyle();
 		style.font = font;
 		style.fontColor = Color.RED;
 		
-		name = new Label("Explosive boost", style);
+		name = new Label("explosive boost", style);
 		name.setPosition((w - name.getWidth()) / 2, h / 2);
 		
 		Skin skin = new Skin(Gdx.files.internal("uiskin.json"));

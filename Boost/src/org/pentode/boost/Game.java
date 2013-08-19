@@ -9,10 +9,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -59,9 +62,11 @@ public class Game {
 	Array<Explosion> explosions = new Array<Explosion>();
 	
 	boolean play = false;
+	boolean paused = false;
 	TextButton playButton;
 	TextButton selectButton;
 	TextButton helpButton;
+	TextButton pauseButton;
 	int timeToWin = -1;
 	
 	int levelNum = 1;
@@ -70,6 +75,12 @@ public class Game {
 	
 	Stage stage; 
 	SpriteBatch batch;
+	
+	Sprite drag;
+	int toDropX;
+	int toDropY;
+	QueryCallback AABBCallback;
+	boolean droppable;
 	
 	public Game(Stage s, SpriteBatch b) {
 		stage = s;
@@ -84,11 +95,12 @@ public class Game {
 		createPlayButton(stage);
 		createSelectButton(stage);
 		createHelpButton(stage);
+		createPauseButton(stage);
 	}
 	
 	public void createDigits() {
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("TickingTimebombBB.ttf"));
-	    font = generator.generateFont(generator.scaleForPixelHeight((int) (cellSize * 1.4)));
+	    font = generator.generateFont(generator.scaleForPixelHeight((int) (cellSize * 1.4)), "0123456789:", false);
 	    font.setColor(Color.RED);
 	    font.setFixedWidthGlyphs("0123456789");
 	    generator.dispose();
@@ -212,6 +224,7 @@ public class Game {
 		   playButton.setVisible(v);
 		   selectButton.setVisible(v);
 		   helpButton.setVisible(v);
+		   pauseButton.setVisible(false);
 		   
 		   if (!v) {
 			   timeWindow.window.setVisible(false);
@@ -235,12 +248,26 @@ public class Game {
 		   
 		   if (detector.detect(world)) {
 			   timeToWin = 100;
-			   Gdx.app.log("Xyu", Integer.toString(timeToWin));
 			   detector.on = false;
 			   sounds.detectorSound.play();
 		   }
 		   
-		   if (play) {
+		   if (!play) {
+			   for (Bomb bomb:bombs) {
+				   int [] d = bomb.drag();
+				   if (d[0] == 0) continue;
+				   drag.setPosition(d[1], d[2]);
+				   
+				   if (d[3] == 1) drag.setColor(Color.WHITE);
+				   else drag.setColor(Color.RED);
+				   
+				   batch.begin();
+				   drag.draw(batch);
+				   batch.end();
+			   }
+		   }
+		   
+		   if (play && !paused) {
 			   for (int i = 0; i < bombs.length; i++) bombs[i].countDown(explosions);
 			   world.step(1/60f, 6, 2);
 			   timeToWin -= 1;
@@ -275,7 +302,6 @@ public class Game {
 			   }
 			   
 			   bomb.resetCurrentTime();
-			   bomb.updateLabel();
 		   }
 		   
 		   for (int k = 0; k < walls.length; k++) {
@@ -345,6 +371,23 @@ public class Game {
 			});
 	   }
 	   
+	   private void createPauseButton(Stage stage) {
+		   Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+		   pauseButton = new TextButton("Help", skin);
+		   
+		   pauseButton.setVisible(false);
+	       stage.addActor(pauseButton);
+	        
+	       pauseButton.addListener(new ChangeListener() {
+	        	@Override
+				public void changed (ChangeEvent event, Actor actor) {
+	        		if (paused) world.step(1/60f, 6, 2);
+	        		paused = true;
+	        	}
+	        		
+			});
+	   }
+	   
 	   public void resizeButtons() {
 		   float w = Gdx.graphics.getWidth();
 		   float h = Gdx.graphics.getHeight();
@@ -364,9 +407,15 @@ public class Game {
 		   helpButton.setY(h - 3 * size - 5);
 		   helpButton.setWidth(size);
 		   helpButton.setHeight(size);
+		   
+		   pauseButton.setX(w - size);
+		   pauseButton.setY(h - 4 * size - 5);
+		   pauseButton.setWidth(size);
+		   pauseButton.setHeight(size);
 	   }
 	   
 	   public void pausePlay() {
+		   paused = false;
 		   playButton.setText("Play");
 		   play = !play;
 		   resetLevel();

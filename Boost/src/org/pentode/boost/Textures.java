@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 
 public class Textures {
 	Texture crateT;
+	Texture crateTarget;
 	Texture brickT;
 	Texture metal;
 	Texture ballT;
@@ -12,6 +13,7 @@ public class Textures {
 	
 	public Textures() {
 		crateT = new Texture(Gdx.files.internal("crate.jpg"));
+		crateTarget = new Texture(Gdx.files.internal("crate_no_timer.jpg"));
 		brickT = new Texture(Gdx.files.internal("brick043.gif"));
 		metal = new Texture(Gdx.files.internal("metal.jpg"));
 		ballT = new Texture(Gdx.files.internal("ball.png"));
@@ -20,6 +22,7 @@ public class Textures {
 	
 	public void dispose() {
 		crateT.dispose();
+		crateTarget.dispose();
 		brickT.dispose();
 		metal.dispose();
 		ballT.dispose();
