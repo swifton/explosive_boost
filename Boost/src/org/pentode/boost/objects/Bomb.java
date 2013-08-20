@@ -96,7 +96,8 @@ public class Bomb {
 		   
 		body = world.createBody(bombDef);
 		body.createFixture(bombFixtureDef);
-		bombBox.dispose(); 
+		bombBox.dispose();
+		body.setUserData("bomb");
 		  
 		AABBCallback = new QueryCallback() {
 			public boolean reportFixture(Fixture fixture) {

@@ -135,9 +135,6 @@ public class Boost implements ApplicationListener {
 		   BOX_TO_WORLD = h/6 - 1;
 		   game.BTW = BOX_TO_WORLD; 
 		   game.cellSize = game.BTW / 5;
-		  		   
-		   game.drag = new Sprite(game.textures.crateTarget, 28, 26, 443, 444);
-		   game.drag.setSize(game.cellSize * 3, game.cellSize * 3);
 
 		   camera.setToOrtho(false, w, h);
 		   

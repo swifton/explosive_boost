@@ -86,6 +86,9 @@ public class Game {
 		fonts = new Fonts(cellSize);
 		buttons = new Buttons(stage, cellSize);
 		setButtonListeners();
+		
+		drag = new Sprite(textures.crateTarget, 28, 26, 443, 444);
+		drag.setSize(cellSize * 3, cellSize * 3);
 	}
 	
 	public void loadLevel() {
@@ -206,7 +209,7 @@ public class Game {
 		   
 		   detector.draw(batch, renderer);
 		   
-		   if (detector.detect(world)) {
+		   if (!paused && detector.detect(world)) {
 			   timeToWin = 100;
 			   detector.on = false;
 			   sounds.detectorSound.play();
@@ -305,6 +308,7 @@ public class Game {
 	        	@Override
 				public void changed (ChangeEvent event, Actor actor) {
 	        		world.step(1/60f, 6, 2);
+	        		detector.detect(world);
 	        		paused = true;
 	        	}
 	        		

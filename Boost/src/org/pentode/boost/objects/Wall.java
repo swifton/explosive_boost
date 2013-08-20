@@ -48,6 +48,7 @@ public class Wall {
 		body.createFixture(wallBox, 0.0f); 
 		wallBox.dispose();
 		body.setTransform(bodyX, bodyY, angles[angle]);
+		body.setUserData("wall");
 	}
 	
 	public void createSprites(int x1, int y1, int x2, int y2, int angle, Texture metal) {

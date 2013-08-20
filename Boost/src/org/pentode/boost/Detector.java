@@ -50,9 +50,8 @@ public class Detector {
 	}
 	
 	 
-	private void changep2(Vector2 p, Body body) {
-
-		if ((Math.abs(p.x - p1.x) < Math.abs(p2.x - p1.x)) || (Math.abs(p.y - p1.y) < Math.abs(p2.y - p1.y))) {
+	private void changep2(Vector2 p, Body body) {		
+		if (p1.dst(p) < p1.dst(p2)) {
 			p2.x = p.x;
 			p2.y = p.y;
 			lastBody = body;
@@ -63,8 +62,9 @@ public class Detector {
 		p2.x= p3.x;
 	    p2.y= p3.y;
 	    world.rayCast(callBack , p1, p2);
+
 	    if (!on) return false;
-  	  	if (lastBody == toDetect) {
+  	  	if (lastBody.getUserData() == "ball") {
   	  		lastBody = null;
 			return true;
 		}

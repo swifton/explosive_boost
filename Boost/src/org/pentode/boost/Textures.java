@@ -13,7 +13,7 @@ public class Textures {
 	
 	public Textures() {
 		crateT = new Texture(Gdx.files.internal("crate.jpg"));
-		crateTarget = new Texture(Gdx.files.internal("crate_no_timer.jpg"));
+		crateTarget = new Texture(Gdx.files.internal("crate_no_timer.png"));
 		brickT = new Texture(Gdx.files.internal("brick043.gif"));
 		metal = new Texture(Gdx.files.internal("metal.jpg"));
 		ballT = new Texture(Gdx.files.internal("ball.png"));
