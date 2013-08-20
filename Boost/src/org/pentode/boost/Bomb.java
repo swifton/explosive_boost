@@ -50,6 +50,10 @@ public class Bomb {
 	RotatableText time;
 	Sound sound;
 	DragAndDrop dragAndDrop;
+	int toDropX;
+	int toDropY;
+	int currentCX;
+	int currentCY;
 	
 	public Bomb(int x, int y, World wrld, Stage stage, TimeWindow w, int sec, int cen, SpriteBatch batch, float BTW, BitmapFont font) {
 		BTWORLD = BTW;
@@ -59,6 +63,8 @@ public class Bomb {
 		world = wrld;
 		timeWindow = w;
 		stagee = stage;
+		currentCX = x;
+		currentCY = y;
 		startX = x * 0.2f - 0.1f;
 		startY = y * 0.2f - 0.1f;
 		createBody(world);
@@ -133,6 +139,8 @@ public class Bomb {
 		dragAndDrop.addSource(new Source(sourceImage) {
 			public Payload dragStart (InputEvent event, float x, float y, int pointer) {
 				if (play) return null;
+				toDropX = currentCX;
+				toDropY = currentCY;
 				touched = false;
 				Payload payload = new Payload();
 				payload.setObject("crap");
@@ -142,9 +150,9 @@ public class Bomb {
 			
 			public void dragStop(InputEvent event, float x, float y, int pointer, DragAndDrop.Target target) {
 				if (play) return;
-				droppable = true;
+				/*droppable = true;
 				
-				if (x < cellSize && y < cellSize) System.out.println("Xyu");
+				//if (x < cellSize && y < cellSize) System.out.println("Xyu");
 
 				float myx = x + sourceImage.getX();
 				float myy = y + sourceImage.getY();
@@ -157,10 +165,14 @@ public class Bomb {
 			    if (!droppable) {
 			    	System.out.println("Xyu BAM");
 			    	return;
-			    }
+			    }*/
 			    
-			    startX = newStartX;
-			    startY = newStartY;
+			    //startX = newStartX;
+			    //startY = newStartY;
+				currentCX = toDropX;
+				currentCY = toDropY;
+				startX = toDropX * 0.2f - 0.1f;
+				startY = toDropY * 0.2f - 0.1f;
 				body.setTransform(new Vector2(startX, startY), 0);
 				sourceImage.setBounds(startX * BTWORLD - cellSize * 1.5f, startY * BTWORLD - cellSize * 1.5f, cellSize * 3, cellSize * 3);
 			}
@@ -245,15 +257,19 @@ public class Bomb {
 	
 	public int[] drag() {
 		if (dragAndDrop.isDragging()) {
-			int x = (int) (Math.floor(dragAndDrop.getDragActor().getX()/cellSize - 1.5f) * cellSize);
-			int y = (int) (Math.floor(dragAndDrop.getDragActor().getY()/cellSize - 1.5f) * cellSize);
+			int x = (int) (Math.floor(dragAndDrop.getDragActor().getX()/cellSize - 1.5f));
+			int y = (int) (Math.floor(dragAndDrop.getDragActor().getY()/cellSize - 0.5f));
+			int xx = x + 2;
+			int yy = y + 2;
+			x = (int) (x * cellSize);
+			y = (int) (y * cellSize);
 			int bool = 0;
 
 			droppable = true;
-			world.QueryAABB(AABBCallback, x / BTWORLD + 0.2f, y / BTWORLD + 0.2f, x / BTWORLD + 0.45f, y / BTWORLD + 0.45f);
+			world.QueryAABB(AABBCallback, x / BTWORLD + 0.15f, y / BTWORLD + 0.15f, x / BTWORLD + 0.45f, y / BTWORLD + 0.45f);
 			if (droppable) {
-				int toDropX = x;
-				int toDropY = y;
+				toDropX = xx;
+				toDropY = yy;
 				bool = 1;  
 			}
 			return new int[] {1, x, y, bool};
