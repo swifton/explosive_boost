@@ -1,6 +1,5 @@
 package org.pentode.boost;
 
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -9,27 +8,18 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 
 public class Game {
-	TimeWindow timeWindow;
-	WinWindow winWindow;
-	HelpWindow helpWindow;
-	private boolean visible = false;
-	
 	float BTW;
 	float cellSize;
 	float buttonSize;
@@ -46,36 +36,32 @@ public class Game {
 	Bomb [] bombs;
 	Brick [] bricks;
 	Wall [] walls;
-	
-	BitmapFont font;
+	Detector detector;
+	Array<Explosion> explosions = new Array<Explosion>();
 
 	Levels levels = new Levels();
-	
-	Detector detector;
-	
+	int levelNum = 1;
+
 	Textures textures = new Textures();
 	Sounds sounds = new Sounds();
+	BitmapFont font;
 	
 	ContactListener contactListener;
 	ShapeRenderer renderer;
-
-	Array<Explosion> explosions = new Array<Explosion>();
-	
-	boolean play = false;
-	boolean paused = false;
-	TextButton playButton;
-	TextButton selectButton;
-	TextButton helpButton;
-	TextButton pauseButton;
-	int timeToWin = -1;
-	
-	int levelNum = 1;
-	boolean waiting = false;
-	boolean complete = false;
-	
 	Stage stage; 
 	SpriteBatch batch;
 	
+	Windows windows;
+	Buttons buttons;
+
+	int timeToWin = -1;
+	
+	boolean waiting = false;
+	boolean complete = false;
+	boolean play = false;
+	boolean paused = false;
+	boolean visible = false;
+
 	Sprite drag;
 	int toDropX;
 	int toDropY;
@@ -86,16 +72,16 @@ public class Game {
 		stage = s;
 		batch = b;
 		renderer = new ShapeRenderer();
-		
-		timeWindow = new TimeWindow(stage);
-		winWindow = new WinWindow(stage);
-		helpWindow = new HelpWindow(stage);
-		
+
 		createContactListener();
-		createPlayButton(stage);
-		createSelectButton(stage);
-		createHelpButton(stage);
-		createPauseButton(stage);
+		
+		float h = Gdx.graphics.getHeight();
+		BTW = h/6 - 1; 
+		cellSize = BTW / 5;
+		
+		windows = new Windows(stage);
+		buttons = new Buttons(stage, cellSize);
+		setButtonListeners();
 	}
 	
 	public void createDigits() {
@@ -177,7 +163,7 @@ public class Game {
 		   Bomb bomb;
 		   
 		   for (int i = 0; i < coordB.length; i++) {
-			   bomb = new Bomb(coordB[i][0], coordB[i][1], world, stage, timeWindow, coordB[i][2], coordB[i][3], batch, BTW, font);
+			   bomb = new Bomb(coordB[i][0], coordB[i][1], world, stage, windows.timeWindow, coordB[i][2], coordB[i][3], batch, BTW, font);
 			   bombs[i] = bomb;
 			   bomb.crate = new Sprite(textures.crateT, 28, 26, 443, 444);
 			   bomb.crate.setSize(cellSize * 3, cellSize * 3);
@@ -204,13 +190,8 @@ public class Game {
 	   private void createContactListener() {
 		   contactListener = new ContactListener() {
                public void beginContact(Contact contact) {
-            	   if (contact.getFixtureB().getBody().getUserData() == "ball") {
-            		   sounds.ballSound.play();
-            	   }
-            	   
-            	   if (contact.getFixtureB().getBody().getUserData() == "brick") {
-            		   //sounds.brickSound.play();
-            	   }
+            	   if (contact.getFixtureB().getBody().getUserData() == "ball") sounds.ballSound.play();
+            	   if (contact.getFixtureB().getBody().getUserData() == "brick") {} //sounds.brickSound.play();
                }
                
                public void endContact(Contact contact) {}
@@ -221,16 +202,8 @@ public class Game {
 	   
 	   public void setVisible(boolean v) {
 		   visible = v;
-		   playButton.setVisible(v);
-		   selectButton.setVisible(v);
-		   helpButton.setVisible(v);
-		   pauseButton.setVisible(false);
-		   
-		   if (!v) {
-			   timeWindow.window.setVisible(false);
-			   helpWindow.window.setVisible(false);
-			   winWindow.window.setVisible(false);
-		   }
+		   buttons.setVisible(v, false);
+		   if (!v) windows.setVisible(false);
 	   }
 	   
 	   public void render() {
@@ -238,13 +211,10 @@ public class Game {
 		   
 		   renderSprites();
 		   
-		   for (Explosion e:explosions) {
-			   e.draw(batch);
-		   }
+		   for (Explosion e:explosions) e.draw(batch);
+		   cleanupExplosions();
 		   
 		   detector.draw(batch, renderer);
-		   
-		   cleanupExplosions();
 		   
 		   if (detector.detect(world)) {
 			   timeToWin = 100;
@@ -252,26 +222,28 @@ public class Game {
 			   sounds.detectorSound.play();
 		   }
 		   
-		   if (!play) {
-			   for (Bomb bomb:bombs) {
-				   int [] d = bomb.drag();
-				   if (d[0] == 0) continue;
-				   drag.setPosition(d[1], d[2]);
-				   
-				   if (d[3] == 1) drag.setColor(Color.WHITE);
-				   else drag.setColor(Color.RED);
-				   
-				   batch.begin();
-				   drag.draw(batch);
-				   batch.end();
-			   }
-		   }
+		   if (!play) dragBomb();
 		   
 		   if (play && !paused) {
 			   for (int i = 0; i < bombs.length; i++) bombs[i].countDown(explosions);
 			   world.step(1/60f, 6, 2);
 			   timeToWin -= 1;
 			   if (timeToWin == 0) complete = true;
+		   }
+	   }
+	   
+	   private void dragBomb() {
+		   for (Bomb bomb:bombs) {
+			   int [] d = bomb.drag();
+			   if (d[0] == 0) continue;
+			   drag.setPosition(d[1], d[2]);
+			   
+			   if (d[3] == 1) drag.setColor(Color.WHITE);
+			   else drag.setColor(Color.RED);
+			   
+			   batch.begin();
+			   drag.draw(batch);
+			   batch.end();
 		   }
 	   }
 	   
@@ -289,24 +261,15 @@ public class Game {
 		   world = new World(new Vector2(0, -10), true);
 		   ball.createBody(world);
 		   detector.toDetect = ball.body;
-		   Bomb bomb;
 		   
-		   for (int j = 0; j < bricks.length; j++) {
-			   bricks[j].createBody(world);
-		   }
+		   for (int j = 0; j < bricks.length; j++) bricks[j].createBody(world);
 		   
 		   for (int k = 0; k < bombs.length; k++) {
-			   bomb = bombs[k];
-			   bomb.createBody(world);
-			   if (bomb.countdownTime < 0) {		   
-			   }
-			   
-			   bomb.resetCurrentTime();
+			   bombs[k].createBody(world);
+			   bombs[k].resetCurrentTime();
 		   }
 		   
-		   for (int k = 0; k < walls.length; k++) {
-			   walls[k].createBody(world);
-		   }
+		   for (int k = 0; k < walls.length; k++) walls[k].createBody(world);
 	   }
 	   
 	   private void cleanupExplosions() {
@@ -320,30 +283,16 @@ public class Game {
 		      }
 	   }
 	   
-	   private void createPlayButton(Stage stage) {
-		   Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-		   playButton = new TextButton("Play", skin);
-		   
-		   playButton.setVisible(visible);
-	       stage.addActor(playButton);
-	        
-	       playButton.addListener(new ChangeListener() {
+	   private void setButtonListeners() {
+	       buttons.playButton.addListener(new ChangeListener() {
 	        	@Override
 				public void changed (ChangeEvent event, Actor actor) {
 	        		pausePlay();
 	        	}
 	        		
 			});
-	   }
-	   
-	   private void createSelectButton(Stage stage) {
-		   Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-		   selectButton = new TextButton("Select level", skin);
-		   
-		   selectButton.setVisible(visible);
-	       stage.addActor(selectButton);
-	        
-	       selectButton.addListener(new ChangeListener() {
+
+		   buttons.selectButton.addListener(new ChangeListener() {
 	        	@Override
 				public void changed (ChangeEvent event, Actor actor) {
 	        		setVisible(false);
@@ -351,80 +300,37 @@ public class Game {
 	        	}
 	        		
 			});
-	   }
 	   
-	   private void createHelpButton(Stage stage) {
-		   Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-		   helpButton = new TextButton("Help", skin);
-		   
-		   helpButton.setVisible(visible);
-	       stage.addActor(helpButton);
-	        
-	       helpButton.addListener(new ChangeListener() {
+		   buttons.helpButton.addListener(new ChangeListener() {
 	        	@Override
 				public void changed (ChangeEvent event, Actor actor) {
 	        		if (!play){
-	        			helpWindow.window.setVisible(true);
+	        			windows.helpWindow.window.setVisible(true);
 	        		}
 	        	}
 	        		
 			});
-	   }
-	   
-	   private void createPauseButton(Stage stage) {
-		   Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-		   pauseButton = new TextButton("Help", skin);
-		   
-		   pauseButton.setVisible(false);
-	       stage.addActor(pauseButton);
-	        
-	       pauseButton.addListener(new ChangeListener() {
+	  
+		   buttons.pauseButton.addListener(new ChangeListener() {
 	        	@Override
 				public void changed (ChangeEvent event, Actor actor) {
-	        		if (paused) world.step(1/60f, 6, 2);
+	        		world.step(1/60f, 6, 2);
 	        		paused = true;
 	        	}
 	        		
 			});
 	   }
-	   
-	   public void resizeButtons() {
-		   float w = Gdx.graphics.getWidth();
-		   float h = Gdx.graphics.getHeight();
-		   float size = buttonSize;
-		   
-		   playButton.setX(w - size);
-		   playButton.setY(h - size - 5);
-		   playButton.setWidth(size);
-		   playButton.setHeight(size);
-		   
-		   selectButton.setX(w - size);
-		   selectButton.setY(h - 2 * size - 5);
-		   selectButton.setWidth(size);
-		   selectButton.setHeight(size);
-		   
-		   helpButton.setX(w - size);
-		   helpButton.setY(h - 3 * size - 5);
-		   helpButton.setWidth(size);
-		   helpButton.setHeight(size);
-		   
-		   pauseButton.setX(w - size);
-		   pauseButton.setY(h - 4 * size - 5);
-		   pauseButton.setWidth(size);
-		   pauseButton.setHeight(size);
-	   }
-	   
+
 	   public void pausePlay() {
 		   paused = false;
-		   playButton.setText("Play");
+		   buttons.playButton.setText("Play");
 		   play = !play;
 		   resetLevel();
 		   detector.on = true;
 
 		   if(play) {
-			   timeWindow.window.setVisible(false);
-			   helpWindow.window.setVisible(false);
-			   playButton.setText("Stop");
+			   windows.setVisible(false);
+			   buttons.playButton.setText("Stop");
 			   for (int k = 0; k < bombs.length; k++) {
 				   bombs[k].countdownTime = (int) Math.floor(((float)bombs[k].seconds + (float)bombs[k].centiSeconds/100)*60);
 				   timeToWin = -1;

@@ -1,6 +1,5 @@
 package org.pentode.boost;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -26,7 +25,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Payload;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Source;
-import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Target;
 import com.badlogic.gdx.utils.Array;
 
 public class Bomb {
@@ -150,25 +148,6 @@ public class Bomb {
 			
 			public void dragStop(InputEvent event, float x, float y, int pointer, DragAndDrop.Target target) {
 				if (play) return;
-				/*droppable = true;
-				
-				//if (x < cellSize && y < cellSize) System.out.println("Xyu");
-
-				float myx = x + sourceImage.getX();
-				float myy = y + sourceImage.getY();
-				float newStartX = ((float)Math.round((myx * 5)/BTWORLD))/5 - 0.1f;
-				float newStartY = ((float)Math.round((myy * 5)/BTWORLD))/5 - 0.1f;
-				myx = newStartX * BTWORLD;
-				myy = newStartY * BTWORLD;
-					
-			    world.QueryAABB(AABBCallback, newStartX - 0.1f, newStartY - 0.1f, newStartX + 0.1f, newStartY + 0.1f);
-			    if (!droppable) {
-			    	System.out.println("Xyu BAM");
-			    	return;
-			    }*/
-			    
-			    //startX = newStartX;
-			    //startY = newStartY;
 				currentCX = toDropX;
 				currentCY = toDropY;
 				startX = toDropX * 0.2f - 0.1f;

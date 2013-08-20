@@ -89,7 +89,7 @@ public class Boost implements ApplicationListener {
 			   game.waiting = false;
 		   }
 		   
-		   if (game.winWindow.message == "next") {
+		   if (game.windows.winWindow.message == "next") {
 			   game.levelNum += 1;
 
 			   if(game.levelNum > game.levels.list.length) {
@@ -99,18 +99,18 @@ public class Boost implements ApplicationListener {
 			   game.loadLevel();
 		   }
 		   
-		   if (game.winWindow.message == "select") {
+		   if (game.windows.winWindow.message == "select") {
 			   game.setVisible(false);
 			   levelSelect.container.setVisible(true);
 		   }
 		   
-		   if (game.winWindow.message != "") {
-			   game.winWindow.message = "";
+		   if (game.windows.winWindow.message != "") {
+			   game.windows.winWindow.message = "";
 			   game.pausePlay();
 		   }
 		   
 		   if (game.complete) {
-			   game.winWindow.window.setVisible(true);
+			   game.windows.winWindow.window.setVisible(true);
 			   game.complete = false;
 			   game.timeToWin = -1;
 		   }
@@ -132,10 +132,7 @@ public class Boost implements ApplicationListener {
 		   BOX_TO_WORLD = h/6 - 1;
 		   game.BTW = BOX_TO_WORLD; 
 		   game.cellSize = game.BTW / 5;
-		   game.buttonSize = w - game.cellSize * 43;
-		   if (game.buttonSize < 80) game.buttonSize = 80;
-		   if (3 * game.buttonSize > h) game.buttonSize = h/3;
-		   game.resizeButtons();
+		  
 		   game.createDigits();
 		   
 		   game.drag = new Sprite(game.textures.crateTarget, 28, 26, 443, 444);
