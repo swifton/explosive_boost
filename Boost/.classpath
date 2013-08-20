@@ -6,5 +6,6 @@
 	<classpathentry exported="true" kind="lib" path="/Boost-android/libs/gdx-freetype.jar"/>
 	<classpathentry exported="true" kind="lib" path="/Boost-android/libs/bugsense3.4.jar"/>
 	<classpathentry kind="lib" path="/Boost-android/libs/acra-4.5.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/anton/projects/boost/Boost-android/libs/guava-14.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

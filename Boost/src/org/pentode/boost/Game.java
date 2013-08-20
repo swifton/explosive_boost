@@ -1,17 +1,19 @@
 package org.pentode.boost;
 
+import org.pentode.boost.objects.Ball;
+import org.pentode.boost.objects.Bomb;
+import org.pentode.boost.objects.Brick;
+import org.pentode.boost.objects.Explosion;
+import org.pentode.boost.objects.Wall;
+import org.pentode.boost.sprites.BrickSprite;
+import org.pentode.boost.ui.Buttons;
+import org.pentode.boost.ui.Windows;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -35,6 +37,7 @@ public class Game {
 	Ball ball;
 	Bomb [] bombs;
 	Brick [] bricks;
+	Array<BrickSprite> brickSprites = new Array<BrickSprite>();
 	Wall [] walls;
 	Detector detector;
 	Array<Explosion> explosions = new Array<Explosion>();
@@ -44,9 +47,9 @@ public class Game {
 
 	Textures textures = new Textures();
 	Sounds sounds = new Sounds();
-	BitmapFont font;
+	Fonts fonts;
 	
-	ContactListener contactListener;
+	SoundListener soundListener;
 	ShapeRenderer renderer;
 	Stage stage; 
 	SpriteBatch batch;
@@ -73,27 +76,21 @@ public class Game {
 		batch = b;
 		renderer = new ShapeRenderer();
 
-		createContactListener();
+		soundListener = new SoundListener(sounds.ballSound);
 		
 		float h = Gdx.graphics.getHeight();
 		BTW = h/6 - 1; 
 		cellSize = BTW / 5;
 		
 		windows = new Windows(stage);
+		fonts = new Fonts(cellSize);
 		buttons = new Buttons(stage, cellSize);
 		setButtonListeners();
 	}
 	
-	public void createDigits() {
-		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("TickingTimebombBB.ttf"));
-	    font = generator.generateFont(generator.scaleForPixelHeight((int) (cellSize * 1.4)), "0123456789:", false);
-	    font.setColor(Color.RED);
-	    font.setFixedWidthGlyphs("0123456789");
-	    generator.dispose();
-	}
-	
 	public void loadLevel() {
 		loadLevelCoordinates(levels.list[levelNum - 1]);
+		createSprites();
 		createBodies();
 		detector = new Detector(detX, detY, detDir, ball.body, textures.detT, BTW);
 		resetLevel();
@@ -142,6 +139,16 @@ public class Game {
 		   return C;
 		}
 	   
+	   private void createSprites() {
+		   if (brickSprites.size < coordBr.length) {
+			   BrickSprite[] addition = new BrickSprite[coordBr.length - brickSprites.size];
+			   for (int i = 0; i < coordBr.length - brickSprites.size; i++) {
+				   addition[i] = new BrickSprite(textures.brickT, cellSize);
+			   }
+			   brickSprites.addAll(addition);
+		   }
+	   }
+	   
 	   private void createBodies() {
 		   ball = new Ball(world, ballInitialPosition, textures.ballT, BTW);
 		   
@@ -163,11 +170,9 @@ public class Game {
 		   Bomb bomb;
 		   
 		   for (int i = 0; i < coordB.length; i++) {
-			   bomb = new Bomb(coordB[i][0], coordB[i][1], world, stage, windows.timeWindow, coordB[i][2], coordB[i][3], batch, BTW, font);
+			   bomb = new Bomb(coordB[i][0], coordB[i][1], world, stage, windows.timeWindow, coordB[i][2], coordB[i][3], batch, BTW, fonts.bombDigits);
 			   bombs[i] = bomb;
-			   bomb.crate = new Sprite(textures.crateT, 28, 26, 443, 444);
-			   bomb.crate.setSize(cellSize * 3, cellSize * 3);
-			   bomb.crate.setOrigin(cellSize * 3/2, cellSize * 3/2);
+			   bomb.createSprite(textures.crateT);
 			   bomb.sound = sounds.explosionSound;
 		   }
 		   
@@ -179,25 +184,10 @@ public class Game {
 		   if (coordBr != null) {
 			   for (int i = 0; i < coordBr.length; i++) {
 				   brick = new Brick(coordBr[i][0], coordBr[i][1], coordBr[i][2], coordBr[i][3], world, BTW);
-				   brick.sprite = new Sprite(textures.brickT, 0, 62, 64, 32);
-				   brick.sprite.setSize(cellSize * 2, cellSize);
-				   brick.sprite.setOrigin(cellSize, cellSize / 2);
+				   brick.sprite = brickSprites.get(i).sprite;
 				   bricks[i] = brick;
 			   }
 		   }
-	   }
-	   
-	   private void createContactListener() {
-		   contactListener = new ContactListener() {
-               public void beginContact(Contact contact) {
-            	   if (contact.getFixtureB().getBody().getUserData() == "ball") sounds.ballSound.play();
-            	   if (contact.getFixtureB().getBody().getUserData() == "brick") {} //sounds.brickSound.play();
-               }
-               
-               public void endContact(Contact contact) {}
-               public void postSolve(Contact contact, ContactImpulse impulse) {}
-               public void preSolve(Contact contact, Manifold oldManifold) {}
-		   };
 	   }
 	   
 	   public void setVisible(boolean v) {
@@ -305,7 +295,7 @@ public class Game {
 	        	@Override
 				public void changed (ChangeEvent event, Actor actor) {
 	        		if (!play){
-	        			windows.helpWindow.window.setVisible(true);
+	        			windows.helpWindow.setVisible(true);
 	        		}
 	        	}
 	        		
@@ -337,7 +327,7 @@ public class Game {
 			   }
 		   }
 		   
-		   world.setContactListener(contactListener);
+		   world.setContactListener(soundListener.contactListener);
 		   for (Bomb bomb:bombs) bomb.play = play; 
 		}
 }

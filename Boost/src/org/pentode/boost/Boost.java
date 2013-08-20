@@ -1,5 +1,8 @@
 package org.pentode.boost;
 
+import org.pentode.boost.ui.LevelSelect;
+import org.pentode.boost.ui.StartScreen;
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
@@ -119,7 +122,7 @@ public class Boost implements ApplicationListener {
    
 	   @Override
 	   public void dispose() {
-		   game.font.dispose();
+		   game.fonts.dispose();
 		   game.sounds.dispose();
 		   game.textures.dispose();
 	   }
@@ -132,9 +135,7 @@ public class Boost implements ApplicationListener {
 		   BOX_TO_WORLD = h/6 - 1;
 		   game.BTW = BOX_TO_WORLD; 
 		   game.cellSize = game.BTW / 5;
-		  
-		   game.createDigits();
-		   
+		  		   
 		   game.drag = new Sprite(game.textures.crateTarget, 28, 26, 443, 444);
 		   game.drag.setSize(game.cellSize * 3, game.cellSize * 3);
 

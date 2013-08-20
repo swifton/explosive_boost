@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
 public class RotatableText {
-	String text;
+	public String text;
 	BitmapFont font; 
 	SpriteBatch batch;
 
