@@ -88,6 +88,7 @@ public class Explosion {
 		if (bullets[0].getWorld() != world) return;
 		for (int k = 0; k < bullets.length; k++) {
 			world.destroyBody(bullets[k]);
+			particles[k].dispose();
 		   }
 	}
 }

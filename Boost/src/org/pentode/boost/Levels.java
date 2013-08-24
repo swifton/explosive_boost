@@ -18,7 +18,7 @@ public class Levels {
 	Level level13 = new Level();
 	Level level14 = new Level();
 	Level level15 = new Level();
-	Level [] list = new Level[]{level1, level2, level3, level4, level5, level6, level7, level8, level9, level10, level11, level12, level13, level14, level15};
+	Level [] list = new Level[]{level1, level2, level3, level4, level6, level7, level8, level9, level10, level11, level12, level13, level14, level15};
 	
 
 	public Levels() {

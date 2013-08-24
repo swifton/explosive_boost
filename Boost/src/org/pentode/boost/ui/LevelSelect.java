@@ -46,20 +46,41 @@ public class LevelSelect {
 		PagedScrollPane scroll = new PagedScrollPane();
 		scroll.setFlingTime(0.1f);
 		scroll.setPageSpacing(25);
+		
+		createButtons(14, scroll);
+		
+		container.add(scroll).expand().fill();
+	}
+	
+	private void createButtons(int totalLevelsNumber, PagedScrollPane scroll) {
+		Button button;
+		int wid = 5;
+		int hei = 3;
+		int pages = 1;
+		float h = Gdx.graphics.getHeight() / (Gdx.graphics.getDensity() * 160);
+		
+		if (h < 3f) {
+			wid = 2;
+			hei = 2;
+			pages = 4;
+		}
+		
+		//int pages = (int) Math.ceil(totalLevelsNumber / (wid * hei));
+		
 		int c = 1;
-		for (int l = 0; l < 1; l++) {
+		for (int l = 0; l < pages; l++) {
 			Table levels = new Table().pad(50);
 			levels.defaults().pad(20, 40, 20, 40);
-			for (int y = 0; y < 3; y++) {
+			for (int y = 0; y < hei; y++) {
 				levels.row();
-				for (int x = 0; x < 5; x++) {
-					levels.add(getLevelButton(c++)).expand().fill();
+				for (int x = 0; x < wid; x++) {
+					button = getLevelButton(c++);
+					levels.add(button).expand().fill();
+					if (c - 1 > totalLevelsNumber) button.setVisible(false);
 				}
 			}
 			scroll.addPage(levels);
 		}
-		
-		container.add(scroll).expand().fill();
 	}
 	
 
