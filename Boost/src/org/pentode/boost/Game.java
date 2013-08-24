@@ -8,7 +8,9 @@ import org.pentode.boost.objects.Wall;
 import org.pentode.boost.sprites.BrickSprite;
 import org.pentode.boost.ui.Buttons;
 import org.pentode.boost.ui.Windows;
+
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -71,6 +73,11 @@ public class Game {
 	QueryCallback AABBCallback;
 	boolean droppable;
 	
+	int time = 0;
+	int totalTime;
+	Preferences prefs = Gdx.app.getPreferences("My Preferences");
+
+	
 	public Game(Stage s, SpriteBatch b) {
 		stage = s;
 		batch = b;
@@ -82,16 +89,20 @@ public class Game {
 		BTW = h/6 - 1; 
 		cellSize = BTW / 5;
 		
-		windows = new Windows(stage);
 		fonts = new Fonts(cellSize);
-		buttons = new Buttons(stage, cellSize);
+		windows = new Windows(stage, fonts.bombDigits);
+		buttons = new Buttons(stage, cellSize, fonts.bombDigits);
 		setButtonListeners();
 		
 		drag = new Sprite(textures.crateTarget, 28, 26, 443, 444);
 		drag.setSize(cellSize * 3, cellSize * 3);
+		
+		//for (int i = 0; i < 15; i++) {prefs.putInteger(Integer.toString(i + 1), 0);}
+		//prefs.flush();
 	}
 	
 	public void loadLevel() {
+		buttons.setTime(prefs.getInteger(Integer.toString(levelNum)));
 		loadLevelCoordinates(levels.list[levelNum - 1]);
 		createSprites();
 		createBodies();
@@ -196,12 +207,17 @@ public class Game {
 	   public void setVisible(boolean v) {
 		   visible = v;
 		   buttons.setVisible(v, false);
-		   for (Bomb bomb:bombs) bomb.enableUI(v);
-		   if (!v) windows.setVisible(false);
+		   
+		   if (!v) {
+			   windows.setVisible(false);
+			   for (Bomb bomb:bombs) bomb.disableUI();
+		   }
 	   }
 	   
 	   public void render() {		   
 		   if (!visible) return;
+		   
+		   time += 1;
 		   
 		   renderSprites();
 		   
@@ -211,6 +227,9 @@ public class Game {
 		   detector.draw(batch, renderer);
 		   
 		   if (!paused && detector.detect(world)) {
+			   //totalTime = time;
+			   windows.winWindow.setTime(time);
+			   updateTimeRecord();
 			   timeToWin = 100;
 			   detector.on = false;
 			   sounds.detectorSound.play();
@@ -224,6 +243,17 @@ public class Game {
 			   timeToWin -= 1;
 			   if (timeToWin == 0) complete = true;
 		   }
+	   }
+	   
+	   private void updateTimeRecord() {
+		   String l = Integer.toString(levelNum);
+		   int t = prefs.getInteger(l);
+		   if (t == 0 || t > time) {
+			   windows.winWindow.setPrevoiusTime(t);
+			   prefs.putInteger(l, time);
+			   prefs.flush();
+		   }
+		   windows.winWindow.congratulate(t > time);
 	   }
 	   
 	   private void dragBomb() {
@@ -324,6 +354,7 @@ public class Game {
 		   detector.on = true;
 
 		   if(play) {
+			   time = 0;
 			   windows.setVisible(false);
 			   buttons.playButton.setText("Stop");
 			   for (int k = 0; k < bombs.length; k++) {

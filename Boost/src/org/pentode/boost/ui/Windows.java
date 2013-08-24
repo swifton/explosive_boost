@@ -1,6 +1,7 @@
 package org.pentode.boost.ui;
 
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class Windows {
@@ -8,9 +9,9 @@ public class Windows {
 	public WinWindow winWindow;
 	public HelpWindow helpWindow;
 	
-	public Windows(Stage stage) {
+	public Windows(Stage stage, BitmapFont digits) {
 		timeWindow = new TimeWindow(stage);
-		winWindow = new WinWindow(stage);
+		winWindow = new WinWindow(stage, digits);
 		helpWindow = new HelpWindow(stage);
 	}
 	

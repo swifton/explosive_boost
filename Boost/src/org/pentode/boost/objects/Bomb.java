@@ -170,8 +170,8 @@ public class Bomb {
 	private void fuckJava() {sourceImage.setBounds(startX * BTWORLD - cellSize * 1.5f, startY * BTWORLD - cellSize * 1.5f, cellSize * 3, cellSize * 3);}
 	private void passBomb() {timeWindow.bomb = this;}
 
-	public void enableUI(boolean enabled) {
-		sourceImage.setVisible(enabled);
+	public void disableUI() {
+		sourceImage.setVisible(false);
 	}
 	
 	public void reset(float posX, float posY) {

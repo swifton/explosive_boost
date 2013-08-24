@@ -37,12 +37,12 @@ public class Boost implements ApplicationListener {
 		   Gdx.input.setInputProcessor(stage);
 		   
 		   game = new Game(stage, batch);
-		   levelSelect = new LevelSelect(stage);
+		   levelSelect = new LevelSelect(stage, game.fonts.bombDigits);
 		   startScreen = new StartScreen(stage);
 		   
 		   debugRenderer = new Box2DDebugRenderer();
 
-		   levelSelect.container.setVisible(false);
+		   levelSelect.setVisible(false);
 	   }	  
 
 	   @Override
@@ -74,20 +74,20 @@ public class Boost implements ApplicationListener {
 	   
 	   private void listenLevels() {
 		   if (startScreen.message == "start") {
-			   levelSelect.container.setVisible(true);
+			   levelSelect.setVisible(true);
 			   startScreen.message  = "";
 		   }
 		   
 		   if (levelSelect.levelNum != -1) {
 			   game.levelNum = levelSelect.levelNum;
 			   levelSelect.levelNum = -1;
-			   game.loadLevel();
 			   game.setVisible(true);
+			   game.loadLevel();
 			   game.waiting = false;
 		   }
 		   
 		   if (game.waiting) {
-			   levelSelect.container.setVisible(true);
+			   levelSelect.setVisible(true);
 			   if (game.play) game.pausePlay();
 			   game.setVisible(false); 
 			   game.waiting = false;
@@ -105,7 +105,11 @@ public class Boost implements ApplicationListener {
 		   
 		   if (game.windows.winWindow.message == "select") {
 			   game.setVisible(false);
-			   levelSelect.container.setVisible(true);
+			   levelSelect.setVisible(true);
+		   }
+		   
+		   if (game.windows.winWindow.message == "replay") {
+				game.buttons.setTime(game.prefs.getInteger(Integer.toString(game.levelNum)));
 		   }
 		   
 		   if (game.windows.winWindow.message != "") {
