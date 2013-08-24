@@ -15,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 public class LevelSelect {
-	PagedScrollPane levels;
 	public int levelNum = -1;
 	     
 	private Skin skin;
@@ -27,8 +26,6 @@ public class LevelSelect {
 		skin.add("star-filled", skin.newDrawable("default-round", Color.YELLOW), Drawable.class);
 		skin.add("star-unfilled", skin.newDrawable("default-round", Color.GRAY), Drawable.class);
         
-		Gdx.input.setInputProcessor(stage);
-
 		container = new Table();
 		stage.addActor(container);
 		container.setFillParent(true);
@@ -37,7 +34,7 @@ public class LevelSelect {
 		scroll.setFlingTime(0.1f);
 		scroll.setPageSpacing(25);
 		int c = 1;
-		for (int l = 0; l < 10; l++) {
+		for (int l = 0; l < 1; l++) {
 			Table levels = new Table().pad(50);
 			levels.defaults().pad(20, 40, 20, 40);
 			for (int y = 0; y < 3; y++) {

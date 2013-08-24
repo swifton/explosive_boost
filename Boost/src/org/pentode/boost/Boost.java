@@ -65,7 +65,9 @@ public class Boost implements ApplicationListener {
 		   
 		   game.render();
 
-		   stage.draw();		   
+		   stage.draw();	
+	       stage.act(Gdx.graphics.getDeltaTime());
+
 	    	
 		   Gdx.gl.glDisable(GL10.GL_DEPTH_TEST);
 	   }
