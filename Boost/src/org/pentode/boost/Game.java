@@ -196,10 +196,11 @@ public class Game {
 	   public void setVisible(boolean v) {
 		   visible = v;
 		   buttons.setVisible(v, false);
+		   for (Bomb bomb:bombs) bomb.enableUI(v);
 		   if (!v) windows.setVisible(false);
 	   }
 	   
-	   public void render() {
+	   public void render() {		   
 		   if (!visible) return;
 		   
 		   renderSprites();

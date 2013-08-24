@@ -17,13 +17,15 @@ public class StartScreen {
 	Label name;
 	Button play;
 	public String message = "";
+	public BitmapFont font;
 	
 	public StartScreen(Stage stage) {
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
 		
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("TickingTimebombBB.ttf"));
-	    BitmapFont font = generator.generateFont(generator.scaleForPixelHeight((int)(h/7)), "explosivbt ", false);
+	    font = generator.generateFont(generator.scaleForPixelHeight((int)(h/7)), "explosivbt ", false);
+	    generator.dispose();
 	    
 	    LabelStyle style = new LabelStyle();
 		style.font = font;

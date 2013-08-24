@@ -7,7 +7,6 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -72,9 +71,8 @@ public class Boost implements ApplicationListener {
 	   }
 	   
 	   private void listenLevels() {
-		   
 		   if (startScreen.message == "start") {
-			   game.waiting = true;
+			   levelSelect.container.setVisible(true);
 			   startScreen.message  = "";
 		   }
 		   
@@ -88,7 +86,8 @@ public class Boost implements ApplicationListener {
 		   
 		   if (game.waiting) {
 			   levelSelect.container.setVisible(true);
-			   game.setVisible(false);
+			   if (game.play) game.pausePlay();
+			   game.setVisible(false); 
 			   game.waiting = false;
 		   }
 		   
@@ -109,7 +108,7 @@ public class Boost implements ApplicationListener {
 		   
 		   if (game.windows.winWindow.message != "") {
 			   game.windows.winWindow.message = "";
-			   game.pausePlay();
+			   if (game.play) game.pausePlay();
 		   }
 		   
 		   if (game.complete) {
@@ -125,6 +124,8 @@ public class Boost implements ApplicationListener {
 		   game.fonts.dispose();
 		   game.sounds.dispose();
 		   game.textures.dispose();
+		   game.batch.dispose();
+		   startScreen.font.dispose();
 	   }
 
 	   @Override

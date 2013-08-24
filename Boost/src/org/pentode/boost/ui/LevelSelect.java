@@ -49,7 +49,6 @@ public class LevelSelect {
 			scroll.addPage(levels);
 		}
 		container.add(scroll).expand().fill();
-		//skin.dispose();
 	}
 	
 

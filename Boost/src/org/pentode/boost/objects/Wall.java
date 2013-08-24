@@ -38,7 +38,7 @@ public class Wall {
 		float bodyY = (y1 + y2 - 1)*0.1f + 0.005f;
 		BodyDef wallBodyDef; 
 		   
-		wallBodyDef =new BodyDef();
+		wallBodyDef = new BodyDef();
 		wallBodyDef.position.set(new Vector2(bodyX, bodyY));
 		PolygonShape wallBox;
 		wallBox = new PolygonShape();

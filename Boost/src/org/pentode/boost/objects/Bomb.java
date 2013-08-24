@@ -55,6 +55,7 @@ public class Bomb {
 	int toDropY;
 	int currentCX;
 	int currentCY;
+	Image sourceImage;
 	
 	public Bomb(int x, int y, World wrld, Stage stage, TimeWindow w, int sec, int cen, SpriteBatch batch, float BTW, BitmapFont font) {
 		BTWORLD = BTW;
@@ -123,7 +124,7 @@ public class Bomb {
 		skinn.add("default", new LabelStyle(new BitmapFont(), Color.WHITE));
 		skinn.add("badlogic", new Texture("droplet.png"));
 
-		final Image sourceImage = new Image(skinn, "badlogic");
+		sourceImage = new Image(skinn, "badlogic");
 		sourceImage.setBounds(x * BTWORLD - cellSize * 1.5f, y * BTWORLD - cellSize * 1.5f, cellSize * 3, cellSize * 3);
 		stage.addActor(sourceImage);
 			
@@ -134,12 +135,10 @@ public class Bomb {
 			    return true;
 			}
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-			   	if (play) return;
-			    if (touched) {
-			    	timeWindow.time.setText(time());
-			    	timeWindow.window.setVisible(true);
-			    	passBomb();
-			    }
+			   	if (play || !touched) return;
+			    timeWindow.time.setText(time());
+			    timeWindow.window.setVisible(true);
+			    passBomb();
 			    touched = false;
 			}
 		});
@@ -163,15 +162,18 @@ public class Bomb {
 				startX = toDropX * 0.2f - 0.1f;
 				startY = toDropY * 0.2f - 0.1f;
 				body.setTransform(new Vector2(startX, startY), 0);
-				sourceImage.setBounds(startX * BTWORLD - cellSize * 1.5f, startY * BTWORLD - cellSize * 1.5f, cellSize * 3, cellSize * 3);
+				fuckJava();
 			}
 		});
 	}
+	
+	private void fuckJava() {sourceImage.setBounds(startX * BTWORLD - cellSize * 1.5f, startY * BTWORLD - cellSize * 1.5f, cellSize * 3, cellSize * 3);}
+	private void passBomb() {timeWindow.bomb = this;}
 
-	private void passBomb() {
-		timeWindow.bomb = this;
+	public void enableUI(boolean enabled) {
+		sourceImage.setVisible(enabled);
 	}
-
+	
 	public void reset(float posX, float posY) {
 		body.setTransform(posX, posY, 0);
 		body.setLinearVelocity(new Vector2(0,0));
@@ -248,6 +250,8 @@ public class Bomb {
 		if (dragAndDrop.isDragging()) {
 			int x = (int) (Math.floor(dragAndDrop.getDragActor().getX()/cellSize - 1.5f));
 			int y = (int) (Math.floor(dragAndDrop.getDragActor().getY()/cellSize - 0.5f));
+			//int rx = (int) (dragAndDrop.getDragActor().getX() - 1.5f * cellSize);
+			//int ry = (int) (dragAndDrop.getDragActor().getY() - 0.5f * cellSize);
 			int xx = x + 2;
 			int yy = y + 2;
 			x = (int) (x * cellSize);

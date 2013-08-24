@@ -82,12 +82,12 @@ public class TimeWindow {
 		window.setPosition((wS - wW) / 2, (hS - hW) / 2);
 		
 		close.addListener(new ClickListener() {
-		    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				window.setVisible(false);
 				bomb.resetCurrentTime();
 				bomb = null;
-		    	return true;
-		    }
+				return true;
+			}
 		});
 		
 		plusSec.addListener(new ClickListener() {
