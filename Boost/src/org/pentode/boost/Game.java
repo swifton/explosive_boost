@@ -6,6 +6,7 @@ import org.pentode.boost.objects.Brick;
 import org.pentode.boost.objects.Explosion;
 import org.pentode.boost.objects.Wall;
 import org.pentode.boost.sprites.BrickSprite;
+import org.pentode.boost.ui.BombButtons;
 import org.pentode.boost.ui.Buttons;
 import org.pentode.boost.ui.Windows;
 
@@ -76,7 +77,8 @@ public class Game {
 	int time = 0;
 	int totalTime;
 	Preferences prefs = Gdx.app.getPreferences("My Preferences");
-
+	
+	BombButtons bombButtons;
 	
 	public Game(Stage s, SpriteBatch b) {
 		stage = s;
@@ -90,6 +92,7 @@ public class Game {
 		cellSize = BTW / 5;
 		
 		fonts = new Fonts(cellSize);
+		bombButtons = new BombButtons(stage, cellSize);
 		windows = new Windows(stage, fonts.bombDigits);
 		buttons = new Buttons(stage, cellSize, fonts.bombDigits);
 		setButtonListeners();
@@ -102,6 +105,8 @@ public class Game {
 	}
 	
 	public void loadLevel() {
+		bombButtons.bomb = null;
+		bombButtons.setVisible(false);
 		buttons.setTime(prefs.getInteger(Integer.toString(levelNum)));
 		loadLevelCoordinates(levels.list[levelNum - 1]);
 		createSprites();
@@ -211,6 +216,7 @@ public class Game {
 		   if (!v) {
 			   windows.setVisible(false);
 			   for (Bomb bomb:bombs) bomb.disableUI();
+			   bombButtons.setVisible(false);
 		   }
 	   }
 	   
@@ -258,6 +264,13 @@ public class Game {
 	   
 	   private void dragBomb() {
 		   for (Bomb bomb:bombs) {
+			   if (bomb.active) {
+				   bomb.active = false;
+				   bombButtons.setVisible(true);
+				   bombButtons.bomb = bomb;
+				   bombButtons.move();
+			   }
+			   
 			   int [] d = bomb.drag();
 			   if (d[0] == 0) continue;
 			   drag.setPosition(d[1], d[2]);
@@ -354,6 +367,7 @@ public class Game {
 		   detector.on = true;
 
 		   if(play) {
+			   bombButtons.setVisible(false);
 			   time = 0;
 			   windows.setVisible(false);
 			   buttons.playButton.setText("Stop");

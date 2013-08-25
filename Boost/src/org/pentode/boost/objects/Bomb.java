@@ -37,7 +37,7 @@ public class Bomb {
 	int currentSeconds;
 	int currentCentiSeconds;
 	public int countdownTime;
-	float startX, startY;
+	public float startX, startY;
 	Stage stagee;
 	boolean touched;
 	public boolean play = false;
@@ -56,6 +56,7 @@ public class Bomb {
 	int currentCX;
 	int currentCY;
 	Image sourceImage;
+	public boolean active = false;
 	
 	public Bomb(int x, int y, World wrld, Stage stage, TimeWindow w, int sec, int cen, SpriteBatch batch, float BTW, BitmapFont font) {
 		BTWORLD = BTW;
@@ -116,6 +117,14 @@ public class Bomb {
 		crate.setSize(cellSize * 3, cellSize * 3);
 		crate.setOrigin(cellSize * 3/2, cellSize * 3/2);
 	}
+	
+	public int getCoordX() {
+		return (int) Math.floor((startX + 0.10001f) / 0.2f);
+	}
+	
+	public int getCoordY() {
+		return (int) Math.floor((startY + 0.10001f) / 0.2f);
+	}
 	  
 	private void createDragDrop(float x, float y, Stage stage) {
 	    dragAndDrop = new DragAndDrop();
@@ -136,6 +145,7 @@ public class Bomb {
 			}
 			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
 			   	if (play || !touched) return;
+			   	active = true;
 			    timeWindow.time.setText(time());
 			    timeWindow.window.setVisible(true);
 			    passBomb();
@@ -157,17 +167,24 @@ public class Bomb {
 			
 			public void dragStop(InputEvent event, float x, float y, int pointer, DragAndDrop.Target target) {
 				if (play) return;
+				active = true;
 				currentCX = toDropX;
 				currentCY = toDropY;
 				startX = toDropX * 0.2f - 0.1f;
 				startY = toDropY * 0.2f - 0.1f;
-				body.setTransform(new Vector2(startX, startY), 0);
-				fuckJava();
+				align();
 			}
 		});
 	}
 	
-	private void fuckJava() {sourceImage.setBounds(startX * BTWORLD - cellSize * 1.5f, startY * BTWORLD - cellSize * 1.5f, cellSize * 3, cellSize * 3);}
+	
+	public void align() {
+		body.setTransform(new Vector2(startX, startY), 0);
+		alignImage();
+	}
+
+	
+	private void alignImage() {sourceImage.setBounds(startX * BTWORLD - cellSize * 1.5f, startY * BTWORLD - cellSize * 1.5f, cellSize * 3, cellSize * 3);}
 	private void passBomb() {timeWindow.bomb = this;}
 
 	public void disableUI() {
@@ -244,6 +261,30 @@ public class Bomb {
 		String cen = Integer.toString(centiSeconds);
 		if (centiSeconds < 10) cen = "0" + cen;
 		return sec + ":" + cen;
+	}
+	
+	public void goDirection(int direction) {
+		float endX = startX;
+		float endY = startY;
+		
+		while (endX > 0 && endY > 0 && endX < 8.5f && endY < 6) {
+			if (direction == 0) endY += 0.2f;
+			if (direction == 1) endX += 0.2f;
+			if (direction == 2) endY -= 0.2f;
+			if (direction == 3) endX -= 0.2f;
+			
+			if (checkDrop(endX, endY)) {
+				startX = endX;
+				startY = endY;
+				return;
+			}
+		}
+	}
+	
+	public boolean checkDrop(float x, float y) {
+		droppable = true;
+		world.QueryAABB(AABBCallback, x - 0.15f, y - 0.15f, x + 0.15f, y + 0.15f);
+		return droppable;
 	}
 	
 	public int[] drag() {
