@@ -51,7 +51,7 @@ public class Brick {
 		
 		fixtureDef.shape = box;
 		fixtureDef.density = 0.5f; 
-		fixtureDef.friction = 0.4f;
+		fixtureDef.friction = 0.7f;
 		fixtureDef.restitution = 0.01f;
 
 		body = world.createBody(def);

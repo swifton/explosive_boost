@@ -94,7 +94,7 @@ public class Game {
 		fonts = new Fonts(cellSize);
 		bombButtons = new BombButtons(stage, cellSize);
 		windows = new Windows(stage, fonts.bombDigits);
-		buttons = new Buttons(stage, cellSize, fonts.bombDigits);
+		buttons = new Buttons(stage, cellSize, fonts.bombDigits, textures);
 		setButtonListeners();
 		
 		drag = new Sprite(textures.crateTarget, 28, 26, 443, 444);
@@ -179,8 +179,8 @@ public class Game {
 		   for (int i = 0; i < coord.length; i++) {
 			   if (coord[i].length == 5) angle = coord[i][4];
 			   else angle = 0;
-			   wall = new Wall(coord[i][0], coord[i][1], coord[i][2], coord[i][3], angle, world, BTW);
-			   wall.createSprites(coord[i][0], coord[i][1], coord[i][2], coord[i][3], angle, textures.metal);
+			   wall = new Wall(coord[i][0], coord[i][1], coord[i][2], coord[i][3], angle, world, BTW, textures.metal, textures.wallEnding);
+			   wall.createSprites(coord[i][0], coord[i][1], coord[i][2], coord[i][3], angle);
 			   walls[i] = wall;
 		   }
 		   
@@ -361,7 +361,7 @@ public class Game {
 
 	   public void pausePlay() {
 		   paused = false;
-		   buttons.playButton.setText("Play");
+		   //buttons.playButton.setText("Play");
 		   play = !play;
 		   resetLevel();
 		   detector.on = true;
@@ -370,7 +370,7 @@ public class Game {
 			   bombButtons.setVisible(false);
 			   time = 0;
 			   windows.setVisible(false);
-			   buttons.playButton.setText("Stop");
+			   //buttons.playButton.setText("Stop");
 			   for (int k = 0; k < bombs.length; k++) {
 				   bombs[k].countdownTime = (int) Math.floor(((float)bombs[k].seconds + (float)bombs[k].centiSeconds/100)*60);
 				   timeToWin = -1;

@@ -22,7 +22,7 @@ public class Ball {
 		BOX_TO_WORLD = BTW;
 		cellSize = BTW / 5;
 		
-		sprite = new Sprite(texture, 0, 0, 80, 80);
+		sprite = new Sprite(texture, 0, 0, 385, 386);
 	    sprite.setSize(cellSize * 2, cellSize * 2);
 	    sprite.setOrigin(cellSize, cellSize);
 

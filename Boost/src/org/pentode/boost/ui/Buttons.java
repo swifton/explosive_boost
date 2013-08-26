@@ -1,17 +1,25 @@
 package org.pentode.boost.ui;
 
+import org.pentode.boost.Textures;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class Buttons {
-	public TextButton playButton;
+	public ImageButton playButton;
 	public TextButton selectButton;
 	public TextButton helpButton;
 	public TextButton pauseButton;
@@ -19,20 +27,26 @@ public class Buttons {
 	Label bestTime;
 	Table timeRecord;
 	
-	public Buttons(Stage stage, float cellSize, BitmapFont digits) {
+	public Buttons(Stage stage, float cellSize, BitmapFont digits, Textures textures) {
 		Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 		
-		playButton = new TextButton("Play", skin);
+		ImageButtonStyle style = new ImageButtonStyle(skin.get(ButtonStyle.class));
+		TextureRegionDrawable p = new TextureRegionDrawable(new TextureRegion(textures.play, 0, 0, 122, 152));
+		p.setRightWidth(cellSize);
+		style.imageUp = p;//new TextureRegionDrawable(new TextureRegion(textures.play, 0, 0, 122, 152));
+		style.imageDown = new TextureRegionDrawable(new TextureRegion(textures.stop, 0, 0, 103, 103));
+		style.imageChecked = new TextureRegionDrawable(new TextureRegion(textures.stop, 0, 0, 103, 103));
+		playButton = new ImageButton(style);
 		selectButton = new TextButton("Select level", skin);
 		helpButton = new TextButton("Help", skin);
 		pauseButton = new TextButton("Pause", skin);
 		bestTime = new Label("Best time:", skin);
 		bestTime.setVisible(false);
 		
-		LabelStyle style = new LabelStyle();
-		style.font = digits;
-		style.fontColor = Color.RED;
-		totalTime = new Label("", style);
+		LabelStyle stylee = new LabelStyle();
+		stylee.font = digits;
+		stylee.fontColor = Color.RED;
+		totalTime = new Label("", stylee);
 		timeRecord = new Table(skin);
 		timeRecord.add(bestTime);
 		timeRecord.row();

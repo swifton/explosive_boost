@@ -14,11 +14,16 @@ public class Wall {
 	float [] angles;
 	Sprite[] sprites;
 	int x1, x2, y1, y2, angle;
+	Texture metal;
+	Texture metalE;
 	
 	static float BOX_TO_WORLD;
 	static float cellSize;
 
-	public Wall (int x11, int y11, int x22, int y22, int a, World world, float BTW) {
+	public Wall (int x11, int y11, int x22, int y22, int a, World world, float BTW, Texture m, Texture em) {
+		metal = m;
+		metalE = em;
+		
 		BOX_TO_WORLD = BTW;
 		cellSize = BTW / 5;
 		
@@ -51,34 +56,39 @@ public class Wall {
 		body.setUserData("wall");
 	}
 	
-	public void createSprites(int x1, int y1, int x2, int y2, int angle, Texture metal) {
+	public void createSprites(int x1, int y1, int x2, int y2, int angle) {
 		int k;
 
 		if (x1 == x2) {
-			int s = (int) Math.floor((y2 - y1 + 1) * cellSize/123);
-			sprites = new Sprite[s + 1];
+			int s = (int) Math.floor((y2 - y1 + 1));
+			sprites = new Sprite[s];
 			for (k = 0; k < s; k++) {
-				createOneSprite(cellSize, 123, x1 * cellSize - cellSize, y1 * cellSize - cellSize + 123 * k, k, metal, 0, 0, 0);
+				createOneSprite(x1 * cellSize - cellSize, y1 * cellSize - cellSize + cellSize * k, k, cellSize/2, cellSize/2, 0, true, k == 0 || k == s - 1);
 			}
-			createOneSprite(cellSize, (y2 - y1 + 1) * cellSize - k * 123, x1 * cellSize - cellSize, y1 * cellSize - cellSize + 123 * k, k, metal, 0, 0, 0);
 		}
 		   
 		if (y1 == y2) {
-			int s = (int) Math.floor((x2 - x1 + 1) * cellSize/103);
-			sprites = new Sprite[s + 1];
+			int s = (int) Math.floor((x2 - x1 + 1));
+			sprites = new Sprite[s];
 			for (k = 0; k < s; k++) {
-				createOneSprite(103, cellSize, x1 * cellSize - cellSize + 103 * k, y1 * cellSize - cellSize, k, metal, (x2 + x1 - 1) * cellSize/2 - (x1 - 1) * cellSize - k * 103, cellSize/2, angle);
+				createOneSprite(x1 * cellSize - cellSize + cellSize * k, y1 * cellSize - cellSize, k, (x2 + x1 - 1) * cellSize/2 - (x1 - 1) * cellSize - k * cellSize, cellSize/2, angle, false, k == 0 || k == s - 1);
 			}
-			createOneSprite((x2 - x1 + 1) * cellSize - k * 103, cellSize, x1 * cellSize - cellSize + 103 * k, y1 * cellSize - cellSize, k, metal, (x2 + x1 - 1) * cellSize/2 - (x1 - 1) * cellSize - k * 103, cellSize/2, angle);
 		}
 	}
 	
-	private void createOneSprite(float wid, float hei, float posX, float posY, int k, Texture metal, float orX, float orY, int angle) { 
+	private void createOneSprite(float posX, float posY, int k, float orX, float orY, int angle, boolean vertical, boolean end) { 
 		Sprite sprite;
-		sprite = new Sprite(metal, 0, 0, (int) wid, (int) hei);
+		if (end) {
+			sprite = new Sprite(metalE, 0, 0, 225, 225);
+		}
+		else {
+			sprite = new Sprite(metal, 0, 0, 219, 174);
+		}
+		sprite.setSize(cellSize, cellSize);
 		sprite.setPosition(posX, posY);
 		sprite.setOrigin(orX, orY);
 		sprite.setRotation((float) (angles[angle] * 180 / Math.PI));
+		if (vertical) sprite.setRotation(90);
 		sprites[k] = sprite;
 	}
 	
