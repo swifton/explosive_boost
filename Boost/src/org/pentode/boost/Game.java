@@ -9,13 +9,11 @@ import org.pentode.boost.sprites.BrickSprite;
 import org.pentode.boost.ui.BombButtons;
 import org.pentode.boost.ui.Buttons;
 import org.pentode.boost.ui.Windows;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
@@ -53,7 +51,6 @@ public class Game {
 	Fonts fonts;
 	
 	SoundListener soundListener;
-	ShapeRenderer renderer;
 	Stage stage; 
 	SpriteBatch batch;
 	
@@ -83,7 +80,6 @@ public class Game {
 	public Game(Stage s, SpriteBatch b) {
 		stage = s;
 		batch = b;
-		renderer = new ShapeRenderer();
 
 		soundListener = new SoundListener(sounds.ballSound);
 		
@@ -111,7 +107,7 @@ public class Game {
 		loadLevelCoordinates(levels.list[levelNum - 1]);
 		createSprites();
 		createBodies();
-		detector = new Detector(detX, detY, detDir, ball.body, textures.detT, BTW);
+		detector = new Detector(detX, detY, detDir, ball.body, textures, BTW);
 		resetLevel();
 	}
 	
@@ -230,7 +226,7 @@ public class Game {
 		   for (Explosion e:explosions) e.draw(batch);
 		   cleanupExplosions();
 		   
-		   detector.draw(batch, renderer);
+		   detector.draw(batch);
 		   
 		   if (!paused && detector.detect(world)) {
 			   //totalTime = time;
@@ -367,6 +363,7 @@ public class Game {
 		   detector.on = true;
 
 		   if(play) {
+			   //if (!buttons.playButton.isChecked()) buttons.playButton.toggle();
 			   bombButtons.setVisible(false);
 			   time = 0;
 			   windows.setVisible(false);
@@ -375,6 +372,9 @@ public class Game {
 				   bombs[k].countdownTime = (int) Math.floor(((float)bombs[k].seconds + (float)bombs[k].centiSeconds/100)*60);
 				   timeToWin = -1;
 			   }
+		   }
+		   else {
+			   //if (buttons.playButton.isChecked()) buttons.playButton.toggle();
 		   }
 		   
 		   world.setContactListener(soundListener.contactListener);

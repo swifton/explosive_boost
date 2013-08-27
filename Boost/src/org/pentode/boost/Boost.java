@@ -58,9 +58,7 @@ public class Boost implements ApplicationListener {
 	      
 		   camera.update();
 		   batch.setProjectionMatrix(camera.combined);
-		   
-		   game.renderer.setProjectionMatrix(camera.combined);
-		   
+		   		   
 		   //debugRenderer.render(game.world, debugMatrix);
 		   
 		   game.render();
@@ -88,7 +86,7 @@ public class Boost implements ApplicationListener {
 		   
 		   if (game.waiting) {
 			   levelSelect.setVisible(true);
-			   if (game.play) game.pausePlay();
+			   if (game.play) game.buttons.playButton.toggle();
 			   game.setVisible(false); 
 			   game.waiting = false;
 		   }
@@ -114,7 +112,7 @@ public class Boost implements ApplicationListener {
 		   
 		   if (game.windows.winWindow.message != "") {
 			   game.windows.winWindow.message = "";
-			   if (game.play) game.pausePlay();
+			   if (game.play) game.buttons.playButton.toggle();
 		   }
 		   
 		   if (game.complete) {

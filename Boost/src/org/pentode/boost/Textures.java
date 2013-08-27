@@ -10,9 +10,12 @@ public class Textures {
 	Texture metal;
 	Texture ballT;
 	Texture detT;
+	Texture detO;
 	Texture wallEnding;
 	public Texture play;
 	public Texture stop;
+	public Texture droplet;
+	public Texture beam;
 	
 	public Textures() {
 		crateT = new Texture(Gdx.files.internal("crate.jpg"));
@@ -21,9 +24,12 @@ public class Textures {
 		metal = new Texture(Gdx.files.internal("wall.png"));
 		ballT = new Texture(Gdx.files.internal("ball.png"));
 		detT = new Texture(Gdx.files.internal("detector.png"));
+		detO = new Texture(Gdx.files.internal("detector3.png"));
 		wallEnding = new Texture(Gdx.files.internal("wallending.png"));
 		play = new Texture(Gdx.files.internal("play.png"));
 		stop = new Texture(Gdx.files.internal("stop.png"));
+		droplet = new Texture(Gdx.files.internal("droplet.png"));
+		beam = new Texture(Gdx.files.internal("beam.png"));
 	}
 	
 	public void dispose() {
@@ -36,5 +42,7 @@ public class Textures {
 		wallEnding.dispose();
 		play.dispose();
 		stop.dispose();
+		droplet.dispose();
+		beam.dispose();
 	}
 }

@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -31,10 +30,8 @@ public class Buttons {
 		Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 		
 		ImageButtonStyle style = new ImageButtonStyle(skin.get(ButtonStyle.class));
-		TextureRegionDrawable p = new TextureRegionDrawable(new TextureRegion(textures.play, 0, 0, 122, 152));
-		p.setRightWidth(cellSize);
-		style.imageUp = p;//new TextureRegionDrawable(new TextureRegion(textures.play, 0, 0, 122, 152));
-		style.imageDown = new TextureRegionDrawable(new TextureRegion(textures.stop, 0, 0, 103, 103));
+		style.imageUp = new TextureRegionDrawable(new TextureRegion(textures.play, 0, 0, 122, 152));
+		//style.imageDown = new TextureRegionDrawable(new TextureRegion(textures.stop, 0, 0, 103, 103));
 		style.imageChecked = new TextureRegionDrawable(new TextureRegion(textures.stop, 0, 0, 103, 103));
 		playButton = new ImageButton(style);
 		selectButton = new TextButton("Select level", skin);

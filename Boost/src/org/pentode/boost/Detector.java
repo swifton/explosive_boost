@@ -1,11 +1,7 @@
 package org.pentode.boost;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -18,12 +14,16 @@ public class Detector {
 	Body lastBody;
 	Vector2 p1, p2, p3;
 	Sprite sprite;
+	Sprite spriteO;
+	Sprite beam;
 	static float BOX_TO_WORLD;
 	static float cellSize;
+	int dir;
 
 	boolean on = true;
 	
-	public Detector(int x, int y, int d, Body tD, Texture texture, float BTW) {
+	public Detector(int x, int y, int d, Body tD, Textures textures, float BTW) {
+		dir = d;
 		BOX_TO_WORLD = BTW;
 		cellSize = BTW / 5;
 		
@@ -36,9 +36,15 @@ public class Detector {
 		if (d == 3) p3 = new Vector2(-1, p1.y);
 		p2 = new Vector2(p3.x, p3.y);
 		
-	    sprite = new Sprite(texture, 0, 0, 64, 64);
+	    sprite = new Sprite(textures.detT, 0, 0, 64, 64);
 	    sprite.setSize(cellSize, cellSize);
 	    sprite.setPosition(p1.x * BOX_TO_WORLD - cellSize/2, p1.y * BOX_TO_WORLD - cellSize/2);
+	    
+	    spriteO = new Sprite(textures.detO, 0, 0, 64, 64);
+	    spriteO.setSize(cellSize, cellSize);
+	    spriteO.setPosition(p1.x * BOX_TO_WORLD - cellSize/2, p1.y * BOX_TO_WORLD - cellSize/2);
+	    
+	    beam = new Sprite(textures.beam, 0, 0, 2, 2);
 		
 		callBack = new RayCastCallback() {
 			   @Override
@@ -70,15 +76,32 @@ public class Detector {
 		}
   	  	return false;
 	}
-	public void draw(SpriteBatch batch, ShapeRenderer renderer) {
-
-		renderer.begin(ShapeType.Line);
-	    renderer.setColor(Color.RED);
-	    renderer.line(p1.x * BOX_TO_WORLD, p1.y * BOX_TO_WORLD, p2.x * BOX_TO_WORLD, p2.y * BOX_TO_WORLD);
-	    renderer.end();
+	public void draw(SpriteBatch batch) {
+	    if (dir == 0) {
+	    	beam.setSize(2, (p2.y - p1.y) * BOX_TO_WORLD);
+	    	beam.setPosition(p1.x * BOX_TO_WORLD, p1.y * BOX_TO_WORLD);
+	    }
+	    
+	    if (dir == 1) {
+	    	beam.setSize((p2.x - p1.x) * BOX_TO_WORLD, 2);
+	    	beam.setPosition(p1.x * BOX_TO_WORLD, p1.y * BOX_TO_WORLD);
+	    }
+	    
+	    if (dir == 2) {
+	    	beam.setSize(2, (p1.y - p2.y) * BOX_TO_WORLD);
+	    	beam.setPosition(p2.x * BOX_TO_WORLD, p2.y * BOX_TO_WORLD);
+	    }
+	    
+	    if (dir == 3) {
+	    	beam.setSize((p1.x - p2.x) * BOX_TO_WORLD, 2);
+	    	beam.setPosition(p2.x * BOX_TO_WORLD, p2.y * BOX_TO_WORLD);
+	    }
+	    System.out.println(dir);
 	      
 	    batch.begin();
-	    sprite.draw(batch);
+	    beam.draw(batch);
+	    if (on) sprite.draw(batch);
+	    else spriteO.draw(batch);
   	  	batch.end();
 	}
 }
