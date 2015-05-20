@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.google.analytics.tracking.android.Tracker;
 
 public class Boost implements ApplicationListener {
 	   OrthographicCamera camera;
@@ -27,6 +28,16 @@ public class Boost implements ApplicationListener {
 	   StartScreen startScreen;
 	   
 	   Game game;
+	   
+	   public interface Analytics {
+		   public void win(int level);
+	   }
+	   
+	   Analytics analytics;
+	   
+	   Boost(Analytics analytics) {
+		   this.analytics = analytics;
+	   }
 
 	   @Override
 	   public void create() {
@@ -37,19 +48,22 @@ public class Boost implements ApplicationListener {
 		   Gdx.input.setInputProcessor(stage);
 		   
 		   game = new Game(stage, batch);
-		   levelSelect = new LevelSelect(stage, game.fonts.bombDigits);
-		   startScreen = new StartScreen(stage);
+		   levelSelect = new LevelSelect(stage, game.levels.list.length);
+		   startScreen = new StartScreen(stage, game.fonts.main, game.fonts.title);
 		   
 		   debugRenderer = new Box2DDebugRenderer();
 
 		   levelSelect.setVisible(false);
+		   
+		   //game.prefs.putInteger(Integer.toString(1), 0);
+		   //game.prefs.flush();
 	   }	  
-
+	   
 	   @Override
 	   public void render() {	
 		   listenLevels();
 		   
-		   Gdx.gl.glClearColor(0, 0, 0.2f, 1);
+		   Gdx.gl.glClearColor(0.5f, 0.5f, 0.8f, 1);
 		   Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		   Gdx.gl.glClear(GL10.GL_DEPTH_BUFFER_BIT);
 		   Gdx.gl.glEnable(GL10.GL_DEPTH_TEST);
@@ -92,6 +106,7 @@ public class Boost implements ApplicationListener {
 		   }
 		   
 		   if (game.windows.winWindow.message == "next") {
+			   analytics.win(game.levelNum);
 			   game.levelNum += 1;
 
 			   if(game.levelNum > game.levels.list.length) {
@@ -129,7 +144,7 @@ public class Boost implements ApplicationListener {
 		   game.sounds.dispose();
 		   game.textures.dispose();
 		   game.batch.dispose();
-		   startScreen.font.dispose();
+		   //startScreen.font.dispose();
 	   }
 
 	   @Override

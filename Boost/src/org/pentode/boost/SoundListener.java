@@ -14,6 +14,8 @@ public class SoundListener {
             public void beginContact(Contact contact) {
          	   if (contact.getFixtureB().getBody().getUserData() == "ball") ball.play();
          	   if (contact.getFixtureB().getBody().getUserData() == "brick") {} //sounds.brickSound.play();
+         	   if (contact.getFixtureB().getBody().getUserData() == "mine") {contact.getFixtureB().getBody().setUserData("explode");}
+         	   if (contact.getFixtureA().getBody().getUserData() == "mine") {contact.getFixtureA().getBody().setUserData("explode");}
             }
             
             public void endContact(Contact contact) {}

@@ -9,13 +9,18 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
-public class Wall {
-	Body body;
+public class Wall extends SolidBody {
+	//Body body;
 	float [] angles;
 	Sprite[] sprites;
 	int x1, x2, y1, y2, angle;
 	Texture metal;
 	Texture metalE;
+	
+	public float bodyX;
+	public float bodyY;
+	public float width;
+	public float height;
 	
 	static float BOX_TO_WORLD;
 	static float cellSize;
@@ -33,28 +38,29 @@ public class Wall {
 		y2 = y22;
 		angle = a;
 		
+		bodyX = (x1 + x2 - 1)*0.1f + 0.005f;
+		bodyY = (y1 + y2 - 1)*0.1f + 0.005f;
+		
+		
 		angles = new float[] {0, (float) Math.PI/6, (float) (Math.PI/4), (float) (Math.PI/3), (float) (2 * Math.PI/3), (float) (3*Math.PI/4), (float) (5*Math.PI/6)};
 		
-		createBody(world);
+		createBody(world, new float[] {bodyX, bodyY, 0.5f, 0.4f, 0.8f, width, height}, false, "box", "wall");
 	}
 	
-	public void createBody(World world) {
-		float bodyX = (x1 + x2 - 1)*0.1f + 0.005f;
-		float bodyY = (y1 + y2 - 1)*0.1f + 0.005f;
-		BodyDef wallBodyDef; 
-		   
-		wallBodyDef = new BodyDef();
-		wallBodyDef.position.set(new Vector2(bodyX, bodyY));
-		PolygonShape wallBox;
-		wallBox = new PolygonShape();
-		wallBox.setAsBox((x2 - x1 + 1) * 0.1f - 0.005f, (y2 - y1 + 1) * 0.1f - 0.005f);
-		body = world.createBody(wallBodyDef);  
+/*	public void createBody(World world) {
+
+		BodyDef bodyDef = new BodyDef();
+		    
+		bodyDef.position.set(new Vector2(bodyX, bodyY));
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox((x2 - x1 + 1) * 0.1f - 0.005f, (y2 - y1 + 1) * 0.1f - 0.005f);
+		body = world.createBody(bodyDef);  
 		
-		body.createFixture(wallBox, 0.0f); 
-		wallBox.dispose();
+		body.createFixture(shape, 0.0f); 
+		shape.dispose();
 		body.setTransform(bodyX, bodyY, angles[angle]);
-		body.setUserData("wall");
-	}
+		//body.setUserData("wall");
+	}*/
 	
 	public void createSprites(int x1, int y1, int x2, int y2, int angle) {
 		int k;

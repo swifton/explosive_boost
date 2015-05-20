@@ -11,7 +11,7 @@ public class Windows {
 	
 	public Windows(Stage stage, BitmapFont digits) {
 		timeWindow = new TimeWindow(stage);
-		winWindow = new WinWindow(stage, digits);
+		winWindow = new WinWindow(stage);
 		helpWindow = new HelpWindow(stage);
 	}
 	

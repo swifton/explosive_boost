@@ -4,11 +4,13 @@ import org.pentode.boost.objects.Ball;
 import org.pentode.boost.objects.Bomb;
 import org.pentode.boost.objects.Brick;
 import org.pentode.boost.objects.Explosion;
+import org.pentode.boost.objects.Mine;
 import org.pentode.boost.objects.Wall;
 import org.pentode.boost.sprites.BrickSprite;
 import org.pentode.boost.ui.BombButtons;
 import org.pentode.boost.ui.Buttons;
 import org.pentode.boost.ui.Windows;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
@@ -30,6 +32,7 @@ public class Game {
 	World world = new World(new Vector2(0, -10), true);
 	
 	int [][] coordB;
+	int [][] coordM;
 	int [][] coord;
 	int [][] coordBr;
 	int detX, detY, detDir; 
@@ -37,6 +40,7 @@ public class Game {
 	
 	Ball ball;
 	Bomb [] bombs;
+	Mine [] mines;
 	Brick [] bricks;
 	Array<BrickSprite> brickSprites = new Array<BrickSprite>();
 	Wall [] walls;
@@ -66,6 +70,7 @@ public class Game {
 	boolean visible = false;
 
 	Sprite drag;
+	Sprite mineDrag;	
 	int toDropX;
 	int toDropY;
 	QueryCallback AABBCallback;
@@ -89,12 +94,15 @@ public class Game {
 		
 		fonts = new Fonts(cellSize);
 		bombButtons = new BombButtons(stage, cellSize);
+		buttons = new Buttons(stage, cellSize, fonts.bombDigits, textures, fonts.smallMain);
 		windows = new Windows(stage, fonts.bombDigits);
-		buttons = new Buttons(stage, cellSize, fonts.bombDigits, textures);
 		setButtonListeners();
 		
 		drag = new Sprite(textures.crateTarget, 28, 26, 443, 444);
 		drag.setSize(cellSize * 3, cellSize * 3);
+		
+		mineDrag = new Sprite(textures.mineT, 28, 26, 443, 444);
+		mineDrag.setSize(cellSize * 3, cellSize * 3);
 		
 		//for (int i = 0; i < 15; i++) {prefs.putInteger(Integer.toString(i + 1), 0);}
 		//prefs.flush();
@@ -114,6 +122,7 @@ public class Game {
 	private void loadLevelCoordinates(Level level) {
 		   coord = level.walls;
 		   coordB = level.bombs;
+		   coordM = level.mines;
 		   ballInitialPosition = level.ball;
 		   
 		   int [][] wallBricks;
@@ -191,6 +200,17 @@ public class Game {
 			   bomb.sound = sounds.explosionSound;
 		   }
 		   
+		   // Mines
+		   mines = new Mine[coordM.length];
+		   Mine mine;
+		   
+		   for (int i = 0; i < coordM.length; i++) {
+			   mine = new Mine(coordM[i][0], coordM[i][1], world, stage, batch, BTW);
+			   mines[i] = mine;
+			   mine.createSprite(textures.mineT);
+			   mine.sound = sounds.explosionSound;
+		   }
+		   
 		   // Bricks
 		   Brick brick;
 		   
@@ -241,6 +261,10 @@ public class Game {
 		   
 		   if (play && !paused) {
 			   for (int i = 0; i < bombs.length; i++) bombs[i].countDown(explosions);
+			   for (int i = 0; i < mines.length; i++) {
+				   Explosion explosion = mines[i].explode(); 
+				   if (explosion != null) explosions.add(explosion);
+			   }
 			   world.step(1/60f, 6, 2);
 			   timeToWin -= 1;
 			   if (timeToWin == 0) complete = true;
@@ -278,10 +302,31 @@ public class Game {
 			   drag.draw(batch);
 			   batch.end();
 		   }
+		   
+		   for (Mine mine:mines) {
+			   if (mine.active) {
+				   mine.active = false;
+				   //bombButtons.setVisible(true);
+				   //bombButtons.bomb = mine;
+				   //bombButtons.move();
+			   }
+			   
+			   int [] d = mine.drag();
+			   if (d[0] == 0) continue;
+			   mineDrag.setPosition(d[1], d[2]);
+			   
+			   if (d[3] == 1) mineDrag.setColor(Color.WHITE);
+			   else mineDrag.setColor(Color.RED);
+			   
+			   batch.begin();
+			   mineDrag.draw(batch, 0.5f);
+			   batch.end();
+		   }
 	   }
 	   
 	   private void renderSprites() {
 		   for (int i = 0; i < bombs.length; i++) bombs[i].draw(batch);
+		   for (int i = 0; i < mines.length; i++) mines[i].draw(batch);
 		   for (int i = 0; i < bricks.length; i++) bricks[i].draw(batch);
 		   for (int i = 0; i < walls.length; i++) walls[i].draw(batch);
 		   ball.draw(batch);
@@ -292,17 +337,35 @@ public class Game {
 		   
 		   world.dispose();
 		   world = new World(new Vector2(0, -10), true);
-		   ball.createBody(world);
+		   ball.createBody(world, new float[] {ball.initialPos.x, ball.initialPos.y, 0.5f, 0.4f, 0.8f, 0.2f}, true, "circle", "ball");
 		   detector.toDetect = ball.body;
 		   
-		   for (int j = 0; j < bricks.length; j++) bricks[j].createBody(world);
+		   for (int j = 0; j < bricks.length; j++) {
+			   float centerX = bricks[j].centerX;
+			   float centerY = bricks[j].centerY;
+			   float width = bricks[j].width;
+			   float height = bricks[j].height;
+			   bricks[j].createBody(world, new float[] {centerX, centerY, 0.5f, 0.7f, 0.01f, width, height}, true, "box", "brick");
+		   }
 		   
 		   for (int k = 0; k < bombs.length; k++) {
 			   bombs[k].createBody(world);
 			   bombs[k].resetCurrentTime();
 		   }
+
+		   for (int k = 0; k < mines.length; k++) {
+			   float startX = mines[k].startX;
+			   float startY = mines[k].startY;
+			   mines[k].createBody(world, new float[]{startX, startY, 0.5f, 0.4f, 0.3f, 0.3f - 0.01f}, false, "circle", "mine");
+		   }
 		   
-		   for (int k = 0; k < walls.length; k++) walls[k].createBody(world);
+		   for (int k = 0; k < walls.length; k++) {
+			   float bodyX = walls[k].bodyX;
+			   float bodyY = walls[k].bodyY;
+			   float width = walls[k].width;
+			   float height = walls[k].height;
+			   walls[k].createBody(world, new float[] {bodyX, bodyY, 0.5f, 0.4f, 0.8f, width, height}, false, "box", "wall");
+		   }
 	   }
 	   
 	   private void cleanupExplosions() {
@@ -379,5 +442,6 @@ public class Game {
 		   
 		   world.setContactListener(soundListener.contactListener);
 		   for (Bomb bomb:bombs) bomb.play = play; 
+		   for (Mine mine:mines) mine.play = play; 
 		}
 }

@@ -18,7 +18,11 @@ public class Levels {
 	Level level13 = new Level();
 	Level level14 = new Level();
 	Level level15 = new Level();
-	Level [] list = new Level[]{level1, level2, level3, level4, level6, level7, level8, level9, level10, level11, level12, level13, level14, level15};
+	Level level16 = new Level();
+	Level level17 = new Level();
+	Level level18 = new Level();
+	Level level19 = new Level();
+	Level [] list = new Level[]{level1, level2, level3, level4, level6, level7, level8, level9, level10, level11, level12, level13, level14, level15, level16, level17, level18, level19};
 	
 
 	public Levels() {
@@ -67,7 +71,7 @@ public class Levels {
 		level9.ball = new Vector2(2.2f, 1f);
 		level9.detector = new DetCoord(43, 20, 0);
 		
-		level10.walls = new int[][]{{1, 1, 1, 30}, {1, 1, 43, 1}, {1, 30, 43, 30}, {43, 1, 43, 20}, {30, 20, 43, 20}, {0, 10, 15, 10}, {10, 12, 16, 12, 1}};
+		level10.walls = new int[][]{{1, 1, 1, 30}, {1, 1, 43, 1}, {1, 30, 43, 30}, {43, 1, 43, 20}, {30, 20, 43, 20}, {1, 10, 15, 10}, {10, 12, 16, 12, 1}};
 		level10.bombs = new int[][]{{8, 3, 1, 0}, {33, 15, 0, 50}};
 		level10.brickWall = new int [][] {{30, 29, 31, 29, 0, -1, 9}, {30, 2, 31, 2, 0, 1, 15}};
 		level10.ball = new Vector2(1.2f, 2.2f);
@@ -102,6 +106,32 @@ public class Levels {
 		level15.brickWall = new int [][] {{9, 6, 10, 6, 0, 1, 9}, {19, 6, 20, 6, 0, 1, 16}, {21, 6, 22, 6, 0, 1, 7}, {33, 6, 34, 6, 0, 1, 16}};
 		level15.ball = new Vector2(5.5f, 2f);
 		level15.detector = new DetCoord(1, 1, 1);
+		
+		level16.walls = new int[][]{{1, 10, 1, 30}, {1, 1, 43, 1}, {1, 30, 43, 30}, {43, 1, 43, 30}, {1, 20, 25, 20}, {15, 1, 15, 10}};
+		level16.bombs = new int[][]{{26, 10, 2, 50}};
+		level16.mines = new int[][]{{25, 5}};
+		level16.ball = new Vector2(1.4f, 5.4f);
+		level16.detector = new DetCoord(1, 10, 2);
+		
+		level17.walls = new int[][]{{1, 1, 1, 10}, {1, 1, 43, 1}, {1, 10, 30, 10}, {43, 1, 43, 30}, {30, 10, 30, 30}, {13, 1, 13, 7}, {25, 1, 25, 5}};
+		level17.bombs = new int[][]{{15, 24, 2, 50}};
+		level17.mines = new int[][]{{15, 18}, {15, 27}};
+		level17.ball = new Vector2(2.5f, 1.6f);
+		level17.bricks = new int[][] {{5, 9, 6, 9}};
+		level17.detector = new DetCoord(30, 30, 1);
+		
+		level18.walls = new int[][]{{43, 30, 43, 30}};
+		level18.bombs = new int[][]{};
+		level18.mines = new int[][]{{15, 20}, {15, 27}, {12, 23}, {18, 23}, {28, 23}};
+		level18.ball = new Vector2(0.8f, 0.8f);
+		level18.detector = new DetCoord(30, 30, 1);
+		
+		level19.walls = new int[][]{{38, 15, 43, 15}, {20, 10, 43, 10}, {20, 10, 20, 25}, {1, 1, 1, 30}, {20, 1, 43, 1}};
+		level19.bombs = new int[][]{{10, 10, 2, 30}};
+		level19.mines = new int[][]{{12, 23}, {18, 23}, {28, 23}};
+		level19.ball = new Vector2(7.5f, 3.2f);
+		level19.detector = new DetCoord(43, 10, 2);
+
 	}
 
 }

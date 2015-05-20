@@ -3,6 +3,7 @@ package org.pentode.boost.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
@@ -18,53 +20,80 @@ public class WinWindow {
 	public Window window;
 	public String message = "";
 	Label timeLabel;
-	int hC = 100;
-	int wC = 200;
 	Label previousTime;
 	Label congr;
 	Label lastTime;
 	
-	public WinWindow(Stage stage, BitmapFont digits) {
+	BitmapFont mainFont;
+	BitmapFont digits;
+	
+	public WinWindow(Stage stage) {
 		Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-		Button next = new TextButton("Next level", skin);
-		Button replay = new TextButton("Replay", skin);
-		Button select = new TextButton("Select level", skin);
 		
-		Label win = new Label("Level complete!", skin);
-		Label crap = new Label("", skin);
-		congr = new Label("Best time!", skin);
-		lastTime = new Label("Prevoius time:", skin);
+		float density = Gdx.graphics.getDensity();
+		int maxWindowWidth = (int) (600 * density);
+		int maxWindowHeigth = (int) (200 * density);
+		
+		int windowWidth = Math.min(Gdx.graphics.getWidth(), maxWindowWidth);
+		int windowHeight = Math.min(Gdx.graphics.getHeight(), maxWindowHeigth);
+		
+		int hButton, wButton;
+		
+		wButton = (int) (windowWidth / 3);
+		hButton = (int) (windowHeight / 3);
+		
+		createFonts((int) (hButton * 3 / 4), (int) hButton / 2, wButton);
+	    
+	    TextButtonStyle s = skin.get(TextButtonStyle.class);
+	    s.font = mainFont;
+	    s.fontColor = Color.BLACK;
+	    
+	    Button next = new TextButton("Next level", s);
+		Button replay = new TextButton("Replay", s);
+		Button select = new TextButton("Select level", s);
+		
+		LabelStyle st = new LabelStyle();
+		st.font = mainFont;
+		
+		Label win = new Label("Level complete!", st);
+		win.setAlignment(Align.center);
+		Label blank = new Label("", st);
+		congr = new Label("Best time!", st);
+		congr.setAlignment(Align.center);
+		lastTime = new Label("Prevoius time:", st);
+		lastTime.setAlignment(Align.center);
 		
 		LabelStyle style = new LabelStyle();
 		style.font = digits;
 		style.fontColor = Color.RED;
 		timeLabel = new Label("", style);
+		timeLabel.setAlignment(Align.center);
 		previousTime = new Label("", style);
-		
-		int wW = 3 * wC;
-		int hW = 3 * hC;
-		int wS = Gdx.graphics.getWidth();
-		int hS = Gdx.graphics.getHeight();
+		previousTime.setAlignment(Align.center);
 		
 		window = new Window("", skin);
 		window.defaults().spaceBottom(0);
+		window.defaults().center();
+		
 		window.row();
-		window.add(crap).minWidth(wC).minHeight(hC).bottom();
-		window.add(win).minWidth(wC).minHeight(hC).bottom();
-		window.add(timeLabel).minWidth(wC).minHeight(hC).bottom().align(Align.center);
+		window.add(blank).minWidth(wButton).minHeight(hButton);
+		window.add(win).minWidth(wButton).minHeight(hButton);
+		window.add(timeLabel).minWidth(wButton).minHeight(hButton);
 		window.row();
-		window.add(next).minWidth(wC).minHeight(hC).bottom();
-		window.add(replay).minWidth(wC).minHeight(hC).bottom();
-		window.add(select).minWidth(wC).minHeight(hC).bottom();
+		window.add(next).minWidth(wButton).minHeight(hButton);
+		window.add(replay).minWidth(wButton).minHeight(hButton);
+		window.add(select).minWidth(wButton).minHeight(hButton);
 		window.row();
-		window.add(congr).minWidth(wC).minHeight(hC).bottom();
-		window.add(lastTime).minWidth(wC).minHeight(hC).bottom();
-		window.add(previousTime).minWidth(wC).minHeight(hC).bottom();
+		window.add(congr).minWidth(wButton).minHeight(hButton);
+		window.add(lastTime).minWidth(wButton).minHeight(hButton);
+		window.add(previousTime).minWidth(wButton).minHeight(hButton);
+		
 		window.setVisible(false);
 		window.setMovable(false);
-		window.setWidth(wW);
-		window.setHeight(hW);
-		window.setPosition((wS - wW) / 2, (hS - hW) / 2);
+		//window.setWidth(windowWidth);
+		//window.setHeight(windowHeight);
+		window.pack();
+		window.setPosition((Gdx.graphics.getWidth() - windowWidth) / 2, (Gdx.graphics.getHeight() - windowHeight) / 2);
 		
 		stage.addActor(window);
 		
@@ -91,6 +120,27 @@ public class WinWindow {
 		    	return true;
 		    }
 		});
+	}
+	
+	private void createFonts(int heightOfDigits, int heightOfLetters, int wButton) {
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("SourceSansPro-Regular.otf"));
+		// bad hack - just made everything 2 times smaller to squeeze into the given space
+		mainFont = generator.generateFont(generator.scaleForPixelHeight(heightOfLetters));
+		float tmp = testFontSize(mainFont, wButton);
+		if (tmp > 1) mainFont = generator.generateFont(generator.scaleForPixelHeight((int) (heightOfLetters / tmp)));
+	    generator.dispose();
+	    
+	    generator = new FreeTypeFontGenerator(Gdx.files.internal("DS-DIGI.TTF"));
+		digits = generator.generateFont(generator.scaleForPixelHeight(heightOfDigits), "0123456789:", false);
+	    digits.setFixedWidthGlyphs("0123456789");
+	    generator.dispose();
+	}
+	
+	private float testFontSize(BitmapFont font, int desiredWidth) {
+		LabelStyle sty = new LabelStyle();
+		sty.font = font;
+		Label tmp = new Label("Level complete!", sty);
+		return tmp.getWidth() / desiredWidth;
 	}
 	
 	public void congratulate(boolean record) {

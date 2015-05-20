@@ -4,7 +4,6 @@ import org.pentode.boost.RotatableText;
 import org.pentode.boost.ui.TimeWindow;
 
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -12,95 +11,37 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.QueryCallback;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
-import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Payload;
-import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Source;
 import com.badlogic.gdx.utils.Array;
 
-public class Bomb {
+public class Bomb extends Movable {
 	Body body;
 	public int seconds;
 	public int centiSeconds;
 	int currentSeconds;
 	int currentCentiSeconds;
 	public int countdownTime;
-	public float startX, startY;
-	Stage stagee;
-	boolean touched;
-	public boolean play = false;
 	TimeWindow timeWindow;
-	static float BTWORLD;
-	static float cellSize;
-	boolean droppable = true;
-	QueryCallback AABBCallback;
-	World world;
 	Sprite crate;
 	RotatableText time;
 	public Sound sound;
-	DragAndDrop dragAndDrop;
-	int toDropX;
-	int toDropY;
-	int currentCX;
-	int currentCY;
-	Image sourceImage;
-	public boolean active = false;
 	
 	public Bomb(int x, int y, World wrld, Stage stage, TimeWindow w, int sec, int cen, SpriteBatch batch, float BTW, BitmapFont font) {
-		BTWORLD = BTW;
-		cellSize = BTW / 5;
+		super(x, y, BTW, stage, wrld);
 		seconds = sec;
 		centiSeconds = cen;
-		world = wrld;
 		timeWindow = w;
-		stagee = stage;
-		currentCX = x;
-		currentCY = y;
-		startX = x * 0.2f - 0.1f;
-		startY = y * 0.2f - 0.1f;
+
 		createBody(world);
-		createDragDrop(startX, startY, stage);
 		resetCurrentTime();
-		time = new RotatableText("00:00", batch, cellSize, font);		
-	}
-	  
-	public void createBody(World wrld) {
-		world = wrld;
-		BodyDef bombDef;	   
-		   
-		FixtureDef bombFixtureDef;
-		 
-		bombDef = new BodyDef();
-		bombDef.type = BodyType.DynamicBody;
-		bombDef.position.set(new Vector2(startX, startY));
-		   
-		PolygonShape bombBox;
-		bombBox = new PolygonShape();
-		bombBox.setAsBox(0.29f, 0.29f);
-		   
-		bombFixtureDef = new FixtureDef();
-		bombFixtureDef.shape = bombBox;
-		bombFixtureDef.density = 0.5f; 
-		bombFixtureDef.friction = 0.4f;
-		bombFixtureDef.restitution = 0.3f;
-		   
-		body = world.createBody(bombDef);
-		body.createFixture(bombFixtureDef);
-		bombBox.dispose();
-		body.setUserData("bomb");
-		  
+		time = new RotatableText("00:00", batch, cellSize, font);	
+		
 		AABBCallback = new QueryCallback() {
 			public boolean reportFixture(Fixture fixture) {
 				if (fixture.getBody() != body) {
@@ -110,6 +51,32 @@ public class Bomb {
 				return true;
 			}
 		};
+	}
+	  
+	public void createBody(World wrld) {
+		world = wrld;
+		BodyDef bodyDef = new BodyDef();	   
+		   
+		FixtureDef fixtureDef;
+		  
+		bodyDef.type = BodyType.DynamicBody;
+		bodyDef.position.set(new Vector2(startX, startY));
+		   
+		PolygonShape shape = new PolygonShape();
+		shape.setAsBox(0.29f, 0.29f);
+		   
+		fixtureDef = new FixtureDef();
+		fixtureDef.shape = shape;
+		fixtureDef.density = 0.5f; 
+		fixtureDef.friction = 0.4f;
+		fixtureDef.restitution = 0.3f;
+		   
+		body = world.createBody(bodyDef);
+		body.createFixture(fixtureDef);
+		shape.dispose();
+		body.setUserData("bomb");
+		  
+
 	}
 	
 	public void createSprite(Texture texture) {
@@ -125,72 +92,22 @@ public class Bomb {
 	public int getCoordY() {
 		return (int) Math.floor((startY + 0.10001f) / 0.2f);
 	}
-	  
-	private void createDragDrop(float x, float y, Stage stage) {
-	    dragAndDrop = new DragAndDrop();
-	        
-	    final Skin skinn = new Skin();
-		skinn.add("default", new LabelStyle(new BitmapFont(), Color.WHITE));
-		skinn.add("badlogic", new Texture("droplet.png"));
-
-		sourceImage = new Image(skinn, "badlogic");
-		sourceImage.setBounds(x * BTWORLD - cellSize * 1.5f, y * BTWORLD - cellSize * 1.5f, cellSize * 3, cellSize * 3);
-		stage.addActor(sourceImage);
-			
-		sourceImage.addListener(new ClickListener() {
-		    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-			    if (play) return true;
-			    touched = true;
-			    return true;
-			}
-			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-			   	if (play || !touched) return;
-			   	active = true;
-			    timeWindow.time.setText(time());
-			    timeWindow.window.setVisible(true);
-			    passBomb();
-			    touched = false;
-			}
-		});
-	        
-		dragAndDrop.addSource(new Source(sourceImage) {
-			public Payload dragStart (InputEvent event, float x, float y, int pointer) {
-				if (play) return null;
-				toDropX = currentCX;
-				toDropY = currentCY;
-				touched = false;
-				Payload payload = new Payload();
-				payload.setObject("crap");
-				payload.setDragActor(new Label("", skinn));
-				return payload;
-			}
-			
-			public void dragStop(InputEvent event, float x, float y, int pointer, DragAndDrop.Target target) {
-				if (play) return;
-				active = true;
-				currentCX = toDropX;
-				currentCY = toDropY;
-				startX = toDropX * 0.2f - 0.1f;
-				startY = toDropY * 0.2f - 0.1f;
-				align();
-			}
-		});
-	}
 	
+	public void tu() {
+	    timeWindow.time.setText(time());
+	    timeWindow.window.setVisible(true);
+	    passBomb();
+	}
 	
 	public void align() {
 		body.setTransform(new Vector2(startX, startY), 0);
 		alignImage();
 	}
-
 	
-	private void alignImage() {sourceImage.setBounds(startX * BTWORLD - cellSize * 1.5f, startY * BTWORLD - cellSize * 1.5f, cellSize * 3, cellSize * 3);}
+	public void alignImage() {sourceImage.setBounds(startX * BTWORLD - cellSize * 1.5f, startY * BTWORLD - cellSize * 1.5f, cellSize * 3, cellSize * 3);}
+
 	private void passBomb() {timeWindow.bomb = this;}
 
-	public void disableUI() {
-		sourceImage.setVisible(false);
-	}
-	
 	public void reset(float posX, float posY) {
 		body.setTransform(posX, posY, 0);
 		body.setLinearVelocity(new Vector2(0,0));
@@ -240,75 +157,26 @@ public class Bomb {
 	public void drawLabel() {
 		time.text =  time();
 		
-		double r = 26.3f * Math.sqrt(5) * (cellSize / 40);
-		double alpha = body.getAngle() + Math.PI * 10 / 11;
+		double r = 25.9f * Math.sqrt(5) * (cellSize / 40);
+		double alpha = body.getAngle() + Math.PI * 9 / 10;
 		float dx = (float) (r * Math.cos(alpha));
 		float dy = (float) (r * Math.sin(alpha));
-		time.draw(body.getPosition().x * BTWORLD + dx, body.getPosition().y * BTWORLD + dy, (float) (body.getAngle() * 180 / Math.PI));
+		time.draw(body.getPosition().x * BTWORLD + dx, body.getPosition().y * BTWORLD + dy, (float) (body.getAngle() * 180 / Math.PI), cellSize);
 	}
 	
 	private String time() {
-		String sec = Integer.toString(currentSeconds);
-		if (currentSeconds < 10) sec = "0" + sec;
-		String cen = Integer.toString(currentCentiSeconds);
-		if (currentCentiSeconds < 10) cen = "0" + cen;
-		return sec + ":" + cen;
+		return timeToString(currentSeconds, currentCentiSeconds);
 	}
 	
 	public String givenTime() {
-		String sec = Integer.toString(seconds);
-		if (seconds < 10) sec = "0" + sec;
-		String cen = Integer.toString(centiSeconds);
-		if (centiSeconds < 10) cen = "0" + cen;
+		return timeToString(seconds, centiSeconds);
+	}
+	
+	private String timeToString(int secondss, int centiSecondss) {
+		String sec = Integer.toString(secondss);
+		if (secondss < 10) sec = "0" + sec;
+		String cen = Integer.toString(centiSecondss);
+		if (centiSecondss < 10) cen = "0" + cen;
 		return sec + ":" + cen;
-	}
-	
-	public void goDirection(int direction) {
-		float endX = startX;
-		float endY = startY;
-		
-		while (endX > 0 && endY > 0 && endX < 8.5f && endY < 6) {
-			if (direction == 0) endY += 0.2f;
-			if (direction == 1) endX += 0.2f;
-			if (direction == 2) endY -= 0.2f;
-			if (direction == 3) endX -= 0.2f;
-			
-			if (checkDrop(endX, endY)) {
-				startX = endX;
-				startY = endY;
-				return;
-			}
-		}
-	}
-	
-	public boolean checkDrop(float x, float y) {
-		droppable = true;
-		world.QueryAABB(AABBCallback, x - 0.15f, y - 0.15f, x + 0.15f, y + 0.15f);
-		return droppable;
-	}
-	
-	public int[] drag() {
-		if (dragAndDrop.isDragging()) {
-			int x = (int) (Math.floor(dragAndDrop.getDragActor().getX()/cellSize - 1.5f));
-			int y = (int) (Math.floor(dragAndDrop.getDragActor().getY()/cellSize - 0.5f));
-			//int rx = (int) (dragAndDrop.getDragActor().getX() - 1.5f * cellSize);
-			//int ry = (int) (dragAndDrop.getDragActor().getY() - 0.5f * cellSize);
-			int xx = x + 2;
-			int yy = y + 2;
-			x = (int) (x * cellSize);
-			y = (int) (y * cellSize);
-			int bool = 0;
-
-			droppable = true;
-			world.QueryAABB(AABBCallback, x / BTWORLD + 0.15f, y / BTWORLD + 0.15f, x / BTWORLD + 0.45f, y / BTWORLD + 0.45f);
-			if (droppable) {
-				toDropX = xx;
-				toDropY = yy;
-				bool = 1;  
-			}
-			return new int[] {1, x, y, bool};
-		}
-		return new int[] {0};
-	}
+	}	
 }
-

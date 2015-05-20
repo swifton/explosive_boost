@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
@@ -22,16 +24,33 @@ public class LevelSelect {
 	public int levelNum = -1;
 	     
 	private Skin skin;
+	TextButtonStyle tbs;
 	public Table container;
 	LabelStyle labelStyle;
 	Preferences prefs = Gdx.app.getPreferences("My Preferences");
 	Array<Label> times;
+	LabelStyle lS;
+	
+	float density;
+	int wid = 5;
+	int hei = 3;
+	
+	BitmapFont mainFont;
+	BitmapFont digits;
 
-	public LevelSelect(Stage stage, BitmapFont digits) {
+	public LevelSelect(Stage stage, int levelsNumber) {
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
+		
+		density = Gdx.graphics.getDensity();
+		
+		createFonts((int) (40 * density), (int) (60 * density));
+		
 		skin.add("top", skin.newDrawable("default-round", Color.BLUE), Drawable.class);
-		skin.add("star-filled", skin.newDrawable("default-round", Color.YELLOW), Drawable.class);
-		skin.add("star-unfilled", skin.newDrawable("default-round", Color.GRAY), Drawable.class);
+		skin.add("default-font", mainFont);
+
+		
+    	lS = new LabelStyle();
+		lS.font = mainFont;
         
 		container = new Table();
 		stage.addActor(container);
@@ -47,26 +66,29 @@ public class LevelSelect {
 		scroll.setFlingTime(0.1f);
 		scroll.setPageSpacing(25);
 		
-		createButtons(14, scroll);
+		float dpHeight = Gdx.graphics.getHeight() / density;
+		float dpWidth = Gdx.graphics.getWidth() / density;
+		
+		if (dpWidth < 1280f / 1.5) wid = 4;
+		if (dpWidth < 1280f / 3) wid = 3;
+		if (dpHeight < 800f / 1.5) hei = 2;
+		
+		createButtons(levelsNumber, scroll);
 		
 		container.add(scroll).expand().fill();
 	}
 	
 	private void createButtons(int totalLevelsNumber, PagedScrollPane scroll) {
 		Button button;
-		int wid = 5;
-		int hei = 3;
-		int pages = 1;
-		float h = Gdx.graphics.getHeight() / (Gdx.graphics.getDensity() * 160);
+		float h = Gdx.graphics.getHeight() / (density * 160);
 		
-		if (h < 3f) {
-			wid = 2;
-			hei = 2;
-			pages = 4;
-		}
+		//if (h < 3f) {
+		//	wid = 2;
+		//	hei = 2;
+		//}
 		
-		//int pages = (int) Math.ceil(totalLevelsNumber / (wid * hei));
-		
+		int pages = (int) Math.ceil((float) totalLevelsNumber / (wid * hei));
+
 		int c = 1;
 		for (int l = 0; l < pages; l++) {
 			Table levels = new Table().pad(50);
@@ -86,12 +108,14 @@ public class LevelSelect {
 
     public Button getLevelButton(int level) {
         Button button = new Button(skin);
+    	//Button button = new Button(tbs);
+
         ButtonStyle style = button.getStyle();
         style.up =  style.down = null;
             
         // Create the label to show the level number
-        Label label = new Label(Integer.toString(level), skin);
-        label.setFontScale(2f);
+        Label label = new Label(Integer.toString(level), lS);
+        //label.setFontScale(2f);
         label.setAlignment(Align.center);  
         
         Label timeLabel = new Label("00:00", labelStyle);
@@ -105,24 +129,8 @@ public class LevelSelect {
             
         // Stack the image and the label at the top of our button
         button.stack(new Image(skin.getDrawable("top")), labels).expand().fill();
-
-        // Randomize the number of stars earned for demonstration purposes
-        //int stars = MathUtils.random(-1, +3);
-        ///Table starTable = new Table();
-        //starTable.defaults().pad(5);
-        //if (stars >= 0) {
-        //    for (int star = 0; star < 3; star++) {
-        //        if (stars > star) {
-        //            starTable.add(new Image(skin.getDrawable("star-filled"))).width(20).height(20);
-        //        } else {
-        //            starTable.add(new Image(skin.getDrawable("star-unfilled"))).width(20).height(20);
-        //        }
-        //    }          
-        //}
             
         button.row();
-        //button.add(timeLabel);
-        //button.add(starTable).height(30);
             
         button.setName(Integer.toString(level));
         button.addListener(levelClickListener);    
@@ -161,4 +169,15 @@ public class LevelSelect {
     		levelNum = Integer.parseInt(event.getListenerActor().getName());
     	}	
     };
+    
+	private void createFonts(int heightOfDigits, int heightOfLetters) {
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("DS-DIGI.TTF"));
+		digits = generator.generateFont(generator.scaleForPixelHeight(heightOfDigits), "0123456789:", false);
+	    digits.setFixedWidthGlyphs("0123456789");
+	    generator.dispose();
+	    
+	    generator = new FreeTypeFontGenerator(Gdx.files.internal("SourceSansPro-Regular.otf"));
+		mainFont = generator.generateFont(generator.scaleForPixelHeight(heightOfLetters), "1234567890", false);
+	    generator.dispose();
+	}
 }

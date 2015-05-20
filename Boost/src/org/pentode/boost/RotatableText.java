@@ -16,13 +16,14 @@ public class RotatableText {
 		batch = b;
 	 }
 	
-	public void draw(float x, float y, float angle) {
+	public void draw(float x, float y, float angle, float cellSize) {
 		Matrix4 matrix = new Matrix4();
 		matrix.setToTranslation(x, y, 0);
 		matrix.rotate(new Vector3(0, 0, 1), angle);
 	    batch.setTransformMatrix(matrix);
 	    batch.begin();
 	    font.draw(batch, text, 0, 0);
+	    //batch.draw(digit[0], 0, -cellSize, cellSize * 150/235, cellSize);
 	    batch.end();
 	    matrix.setToRotation(new Vector3(0, 0, 1), 0);
 	    batch.setTransformMatrix(matrix);

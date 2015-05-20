@@ -15,6 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class Buttons {
@@ -26,7 +28,7 @@ public class Buttons {
 	Label bestTime;
 	Table timeRecord;
 	
-	public Buttons(Stage stage, float cellSize, BitmapFont digits, Textures textures) {
+	public Buttons(Stage stage, float cellSize, BitmapFont digits, Textures textures, BitmapFont main) {
 		Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 		
 		ImageButtonStyle style = new ImageButtonStyle(skin.get(ButtonStyle.class));
@@ -34,16 +36,30 @@ public class Buttons {
 		//style.imageDown = new TextureRegionDrawable(new TextureRegion(textures.stop, 0, 0, 103, 103));
 		style.imageChecked = new TextureRegionDrawable(new TextureRegion(textures.stop, 0, 0, 103, 103));
 		playButton = new ImageButton(style);
-		selectButton = new TextButton("Select level", skin);
-		helpButton = new TextButton("Help", skin);
-		pauseButton = new TextButton("Pause", skin);
-		bestTime = new Label("Best time:", skin);
-		bestTime.setVisible(false);
+		
+		Drawable dr = skin.newDrawable("default-round");
+		TextButtonStyle bStyle = new TextButtonStyle(dr, dr, dr);
+		bStyle.font = main;
+		bStyle.fontColor = Color.BLACK;
+		
+		//selectButton = new TextButton("Select level", skin);
+		selectButton = new TextButton("Select\n level", bStyle);
+		helpButton = new TextButton("Help", bStyle);
+		pauseButton = new TextButton("Pause", bStyle);
+		
+		LabelStyle styleee = new LabelStyle();
+		styleee.font = main;
+		styleee.background = skin.newDrawable("default-round", Color.BLACK);
+		
+		bestTime = new Label("Best\ntime:", styleee);
+		bestTime.setVisible(false);		
 		
 		LabelStyle stylee = new LabelStyle();
 		stylee.font = digits;
 		stylee.fontColor = Color.RED;
+		stylee.background = skin.newDrawable("default-round", Color.BLACK);
 		totalTime = new Label("", stylee);
+		totalTime.setVisible(false);
 		timeRecord = new Table(skin);
 		timeRecord.add(bestTime);
 		timeRecord.row();
@@ -67,7 +83,7 @@ public class Buttons {
 		   float w = Gdx.graphics.getWidth();
 		   float h = Gdx.graphics.getHeight();
 		   float size = w - cellSize * 43;
-		   if (size < 80) size = 80;
+		   if (size < 100) size = 100;
 		   if (3 * size > h) size = h/3;
 		   
 		   playButton.setX(w - size);

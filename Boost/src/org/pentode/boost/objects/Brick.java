@@ -10,10 +10,12 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
-public class Brick {
-	public Body body;
-	float centerX;
-	float centerY;
+public class Brick extends SolidBody {
+	//public Body body;
+	public float centerX;
+	public float centerY;
+	public float width;
+	public float height;
 	public Sprite sprite;
 	int vertical;
 	int x1, x2, y1, y2;
@@ -29,36 +31,15 @@ public class Brick {
 		y1 = y11;
 		y2 = y22;
 		
+		centerX = (x1 + x2 - 1)*0.1f;
+		centerY = (y1 + y2 - 1)*0.1f;
+		width = (x2 - x1 + 1) * 0.1f;
+		height = (y2 - y1 + 1) * 0.1f;
+		
 		if (x2 == x1) vertical = 1;
 		else vertical = 0;
 		
-		createBody(world);
-	}
-	
-	public void createBody(World world) {
-		centerX = (x1 + x2 - 1)*0.1f;
-		centerY = (y1 + y2 - 1)*0.1f;
-		
-		
-		BodyDef def = new BodyDef(); 
-		FixtureDef fixtureDef = new FixtureDef();
-
-		def.type = BodyType.DynamicBody;
-		def.position.set(new Vector2(centerX, centerY));
-		
-		PolygonShape box = new PolygonShape();
-		box.setAsBox((x2 - x1 + 1) * 0.1f, (y2 - y1 + 1) * 0.1f);
-		
-		fixtureDef.shape = box;
-		fixtureDef.density = 0.5f; 
-		fixtureDef.friction = 0.7f;
-		fixtureDef.restitution = 0.01f;
-
-		body = world.createBody(def);
-		body.createFixture(fixtureDef);
-		body.setUserData("brick");
-
-		box.dispose();
+		createBody(world, new float[] {centerX, centerY, 0.5f, 0.7f, 0.01f, width, height}, true, "box", "brick");
 	}
 	
 	public void reset() {

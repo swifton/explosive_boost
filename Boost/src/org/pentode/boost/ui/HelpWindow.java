@@ -1,10 +1,15 @@
 package org.pentode.boost.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
@@ -12,28 +17,42 @@ import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class HelpWindow {
-	Window window;
+	Window window;	
+	BitmapFont mainFont;
+	Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+	float density = Gdx.graphics.getDensity();
 	
 	public HelpWindow(Stage stage) {
-		Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-		Button close = new TextButton("Close", skin);
-		Label hint1 = new Label("Press the Play button and see what happens", skin);
-		Label hint2 = new Label("Wooden crates with timers are bombs", skin);
-		Label hint3 = new Label("Drag a bomb to change its initial position", skin);
-		Label hint4 = new Label("Touch a bomb to set the countdown timer", skin);
-		Label hint5 = new Label("The goal is to make the ball cross the red laser beam", skin);
+		int width = Gdx.graphics.getWidth();
+		int dpWidth = (int) (width / density);
+		
+		if (dpWidth > 800) createFonts((int) (45 * density));
+		if ((dpWidth <= 800) && (dpWidth >= 400)) createFonts((int) (20 * density));
+		if (dpWidth < 400) createFonts((int) (10 * density));
+		
+	    LabelStyle s = new LabelStyle();
+	    s.font = mainFont;
+	    
+	    TextButtonStyle st = skin.get(TextButtonStyle.class);
+	    st.font = mainFont;
+	    st.fontColor = Color.BLACK;	    
+		
+		Button close = new TextButton("Close", st);
+		Label hint1 = new Label("Press the Play button and see what happens", s);
+		Label hint2 = new Label("Wooden crates with timers are bombs", s);
+		Label hint3 = new Label("Drag a bomb to change its initial position", s);
+		Label hint4 = new Label("Tap a bomb to set the countdown timer", s);
+		Label hint5 = new Label("The goal is to make the ball cross the red laser beam", s);
+	
 		hint1.setAlignment(Align.center);
 		hint2.setAlignment(Align.center);
 		hint3.setAlignment(Align.center);
 		hint4.setAlignment(Align.center);
 		hint5.setAlignment(Align.center);
 		
-		int lW = 400;
+		int lW = (int) hint5.getWidth() + 50;
 		int lH = 50;
-		int bW = lW;
 		int bH = 100;
-		int wW = lW;
-		int hW = lH * 5 + bH;
 		int wS = Gdx.graphics.getWidth();
 		int hS = Gdx.graphics.getHeight();
 		
@@ -49,12 +68,12 @@ public class HelpWindow {
 		window.row();
 		window.add(hint5).minWidth(lW).minHeight(lH);
 		window.row();
-		window.add(close).minWidth(bW).minHeight(bH);
-		window.setSize(wW, hW);
+		window.add(close).minWidth(lW).minHeight(bH);
+		window.pack();
 		window.setMovable(false);
 		stage.addActor(window);
 		window.setVisible(false);
-		window.setPosition((wS - wW) / 2, (hS - hW) / 2);
+		window.setPosition((wS - window.getWidth()) / 2, (hS - window.getHeight()) / 2);
 				
 		close.addListener(new ClickListener() {
 		    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -66,5 +85,11 @@ public class HelpWindow {
 	
 	public void setVisible(boolean visible) {
 		window.setVisible(visible);
+	}
+	
+	private void createFonts(int heightOfLetters) {
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("SourceSansPro-Regular.otf"));
+		mainFont = generator.generateFont(generator.scaleForPixelHeight(heightOfLetters));
+	    generator.dispose();
 	}
 }

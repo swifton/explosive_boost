@@ -16,6 +16,7 @@ public class Detector {
 	Sprite sprite;
 	Sprite spriteO;
 	Sprite beam;
+	Sprite greenBeam;
 	static float BOX_TO_WORLD;
 	static float cellSize;
 	int dir;
@@ -45,6 +46,7 @@ public class Detector {
 	    spriteO.setPosition(p1.x * BOX_TO_WORLD - cellSize/2, p1.y * BOX_TO_WORLD - cellSize/2);
 	    
 	    beam = new Sprite(textures.beam, 0, 0, 2, 2);
+	    greenBeam = new Sprite(textures.greenBeam, 0, 0, 2, 2);
 		
 		callBack = new RayCastCallback() {
 			   @Override
@@ -80,28 +82,41 @@ public class Detector {
 	    if (dir == 0) {
 	    	beam.setSize(2, (p2.y - p1.y) * BOX_TO_WORLD);
 	    	beam.setPosition(p1.x * BOX_TO_WORLD, p1.y * BOX_TO_WORLD);
+	    	greenBeam.setSize(2, (p2.y - p1.y) * BOX_TO_WORLD);
+	    	greenBeam.setPosition(p1.x * BOX_TO_WORLD, p1.y * BOX_TO_WORLD);
 	    }
 	    
 	    if (dir == 1) {
 	    	beam.setSize((p2.x - p1.x) * BOX_TO_WORLD, 2);
 	    	beam.setPosition(p1.x * BOX_TO_WORLD, p1.y * BOX_TO_WORLD);
+	    	greenBeam.setSize((p2.x - p1.x) * BOX_TO_WORLD, 2);
+	    	greenBeam.setPosition(p1.x * BOX_TO_WORLD, p1.y * BOX_TO_WORLD);
 	    }
 	    
 	    if (dir == 2) {
 	    	beam.setSize(2, (p1.y - p2.y) * BOX_TO_WORLD);
 	    	beam.setPosition(p2.x * BOX_TO_WORLD, p2.y * BOX_TO_WORLD);
+	    	greenBeam.setSize(2, (p1.y - p2.y) * BOX_TO_WORLD);
+	    	greenBeam.setPosition(p2.x * BOX_TO_WORLD, p2.y * BOX_TO_WORLD);
 	    }
 	    
 	    if (dir == 3) {
 	    	beam.setSize((p1.x - p2.x) * BOX_TO_WORLD, 2);
 	    	beam.setPosition(p2.x * BOX_TO_WORLD, p2.y * BOX_TO_WORLD);
+	    	greenBeam.setSize((p1.x - p2.x) * BOX_TO_WORLD, 2);
+	    	greenBeam.setPosition(p2.x * BOX_TO_WORLD, p2.y * BOX_TO_WORLD);
 	    }
-	    System.out.println(dir);
 	      
 	    batch.begin();
-	    beam.draw(batch);
-	    if (on) sprite.draw(batch);
-	    else spriteO.draw(batch);
+	    
+	    if (on) {
+	    	sprite.draw(batch);
+	    	beam.draw(batch);
+	    }
+	    else {
+	    	spriteO.draw(batch);
+	    	greenBeam.draw(batch);
+	    }
   	  	batch.end();
 	}
 }

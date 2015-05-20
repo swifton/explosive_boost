@@ -4,12 +4,14 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/Boost"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="lib" path="/Boost/libs/gdx.jar" sourcepath="/Boost/libs/gdx-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gdx-backend-android.jar" sourcepath="libs/gdx-backend-android-sources.jar"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry exported="true" kind="lib" path="libs/gdx-freetype.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/acra-4.5.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/bugsense3.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="/home/anton/projects/boost/Boost-android/libs/libGoogleAnalyticsServices.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/GoogleAnalyticsServicesAndroid_3.01.zip"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

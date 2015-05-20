@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 public class Level {
 	int [][] walls;
 	int [][] bombs;
+	int [][] mines = new int[][]{};
 	int [][] bricks;
 	int [][] brickWall; // see details in loadLevel
 	Vector2 ball;

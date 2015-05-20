@@ -1,0 +1,2 @@
+# Module org.pentode.boost.GwtDefinition
+# RPC service class, partial path of RPC policy file
